@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>ScopeProof 证据形式理解度预试</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main id="xa-intro" class="intro-shell">
+    <section class="intro-hero">
+      <p class="eyebrow">5–7 分钟理解度预试</p>
+      <h1>请判断流程证据能够说明什么</h1>
+      <p>你会看到四个公开产物、相关声明和一份独立核验结果。我们关心页面是否表达清楚，不考察专业知识。</p>
+    </section>
+    <section class="card consent-card">
+      <p class="section-label">参与说明</p>
+      <p>参与完全自愿，可以随时关闭页面退出。系统不要求姓名或联系方式；回答仅用于改进正式实验材料。</p>
+      <label class="consent-check">
+        <input id="xa-consent" type="checkbox">
+        <span>我已年满 18 岁，阅读并理解上述说明，自愿参加本次预试。</span>
+      </label>
+      <button id="xa-start" class="primary-button" type="button" disabled>开始四道判断</button>
+      <p id="xa-intro-status" class="xa-status" role="status"></p>
+    </section>
+  </main>
+
+  <main id="xa-study" class="shell hidden">
+    <header class="study-header">
+      <div>
+        <p class="eyebrow">证据形式理解度预试</p>
+        <h1>这份证据能说明什么？</h1>
+      </div>
+      <p id="xa-progress" class="progress">正在加载……</p>
+    </header>
+
+    <section class="card scenario-card">
+      <p class="section-label">情境</p>
+      <h2>请查看公开产物和需要判断的声明</h2>
+      <p id="xa-context"></p>
+      <div class="artifact">
+        <span id="xa-artifact-label"></span>
+        <img id="xa-artifact-image" class="hidden" src="" alt="">
+        <p id="xa-artifact-text" class="artifact-text hidden"></p>
+      </div>
+      <div class="claim-box">
+        <span>需要判断的声明</span>
+        <p id="xa-claim"></p>
+      </div>
+    </section>
+
+    <section class="card evidence-card">
+      <div class="section-title-row">
+        <div>
+          <p class="section-label">证据</p>
+          <h2 id="xa-evidence-heading"></h2>
+        </div>
+        <span id="xa-mode-chip" class="mode-chip"></span>
+      </div>
+      <div id="xa-source-note" class="xa-source-note"></div>
+      <button id="xa-evidence-button" class="primary-button" type="button"></button>
+      <div id="xa-waiting" class="waiting hidden" role="status">
+        <span class="spinner" aria-hidden="true"></span>
+        <span>独立核验器正在执行并返回结果……</span>
+      </div>
+      <section id="xa-report" class="xa-report hidden" aria-live="polite">
+        <div class="xa-report-meta">
+          <div><span>核验方</span><strong id="xa-verifier"></strong></div>
+          <div><span>生成时间</span><strong id="xa-generated-at"></strong></div>
+          <div><span>报告编号</span><strong id="xa-report-id"></strong></div>
+        </div>
+        <ol id="xa-transcript" class="transcript"></ol>
+        <section id="xa-comparison" class="comparison">
+          <p class="section-label">比较结果</p>
+          <h3 id="xa-comparison-heading"></h3>
+          <div id="xa-comparison-images" class="comparison-grid hidden">
+            <figure><img id="xa-replay-image" src="" alt="核验生成的结果"><figcaption>核验生成版</figcaption></figure>
+            <div class="comparison-mark" aria-hidden="true">↔</div>
+            <figure><img id="xa-published-image" src="" alt="公开发布的结果"><figcaption>公开发布版</figcaption></figure>
+          </div>
+          <div id="xa-comparison-texts" class="comparison-text-grid hidden">
+            <div><span>核验生成版</span><p id="xa-replay-text"></p></div>
+            <div><span>公开发布版</span><p id="xa-published-text"></p></div>
+          </div>
+          <details id="xa-details"><summary>查看技术细节</summary><code id="xa-technical-detail"></code></details>
+        </section>
+      </section>
+    </section>
+
+    <form id="xa-response-form" class="card response-card">
+      <p class="section-label">你的判断</p>
+      <fieldset id="xa-judgment-fieldset" disabled>
+        <legend>仅根据上述证据：</legend>
+        <label><input type="radio" name="judgment" value="supports" required> 这些证据支持该声明。</label>
+        <label><input type="radio" name="judgment" value="contradicts"> 这些证据反驳该声明。</label>
+        <label><input type="radio" name="judgment" value="cannot_determine"> 仅凭这些证据无法判断该声明。</label>
+      </fieldset>
+      <label class="range-label" for="xa-confidence">你对上述判断有多大把握？ <output id="xa-confidence-output">请拖动</output></label>
+      <input id="xa-confidence" type="range" min="0" max="100" value="50" disabled>
+      <fieldset id="xa-strength-fieldset" disabled>
+        <legend>不考虑你是否同意声明，这份核验证据本身有多强？</legend>
+        <div class="xa-scale" role="radiogroup" aria-label="证据强度，1到7">
+          <span>很弱</span>
+          <label><input type="radio" name="evidence_strength" value="1" required>1</label>
+          <label><input type="radio" name="evidence_strength" value="2">2</label>
+          <label><input type="radio" name="evidence_strength" value="3">3</label>
+          <label><input type="radio" name="evidence_strength" value="4">4</label>
+          <label><input type="radio" name="evidence_strength" value="5">5</label>
+          <label><input type="radio" name="evidence_strength" value="6">6</label>
+          <label><input type="radio" name="evidence_strength" value="7">7</label>
+          <span>很强</span>
+        </div>
+      </fieldset>
+      <div class="form-footer">
+        <p id="xa-save-status" class="xa-status" role="status"></p>
+        <button id="xa-submit" class="secondary-button" type="submit" disabled>保存并继续</button>
+      </div>
+    </form>
+  </main>
+
+  <main id="xa-poststudy" class="intro-shell hidden">
+    <section class="intro-hero">
+      <p class="eyebrow">最后五项理解问题</p>
+      <h1>你刚才看到的核验是什么？</h1>
+      <p>请按你的真实理解回答。答错不会取消参与资格。</p>
+    </section>
+    <form id="xa-poststudy-form" class="card response-card">
+      <fieldset><legend>页面把刚才的核验结果归因给谁？</legend>
+        <label><input type="radio" name="source_identity" value="independent_verifier" required> 页面标明的 ScopeProof 独立核验器</label>
+        <label><input type="radio" name="source_identity" value="publisher"> 发布产物的工作室／公司／平台</label>
+        <label><input type="radio" name="source_identity" value="browser"> 只由我当前的浏览器自行判断</label>
+        <label><input type="radio" name="source_identity" value="unsure"> 不确定</label>
+      </fieldset>
+      <fieldset><legend>你看到的核验结果是什么时候产生的？</legend>
+        <label><input type="radio" name="evidence_timing" value="during_session" required> 我点击以后，在当前会话中产生</label>
+        <label><input type="radio" name="evidence_timing" value="before_session"> 在我进入页面以前已经产生并保存</label>
+        <label><input type="radio" name="evidence_timing" value="mixed"> 有些是当前产生，有些是预先产生</label>
+        <label><input type="radio" name="evidence_timing" value="unsure"> 不确定</label>
+      </fieldset>
+      <fieldset><legend>每份结果展示了哪一组核验操作？</legend>
+        <label><input type="radio" name="operations_recall" value="read_generate_compare" required> 读取公开材料、重新生成、完整比较</label>
+        <label><input type="radio" name="operations_recall" value="signature_only"> 只检查数字签名</label>
+        <label><input type="radio" name="operations_recall" value="visual_only"> 只由人工看两份产物是否相似</label>
+        <label><input type="radio" name="operations_recall" value="unsure"> 不确定</label>
+      </fieldset>
+      <fieldset><legend>这些核验是否直接观测了产物最初被制作的过程？</legend>
+        <label><input type="radio" name="original_production_observed" value="yes" required> 是</label>
+        <label><input type="radio" name="original_production_observed" value="no"> 否</label>
+        <label><input type="radio" name="original_production_observed" value="unsure"> 不确定</label>
+      </fieldset>
+      <fieldset><legend>你有多确定自己理解了“谁产生了这些核验结果”？</legend>
+        <div class="xa-scale" role="radiogroup" aria-label="来源理解把握，1到7"><span>完全不确定</span>
+          <label><input type="radio" name="source_confidence" value="1" required>1</label><label><input type="radio" name="source_confidence" value="2">2</label><label><input type="radio" name="source_confidence" value="3">3</label><label><input type="radio" name="source_confidence" value="4">4</label><label><input type="radio" name="source_confidence" value="5">5</label><label><input type="radio" name="source_confidence" value="6">6</label><label><input type="radio" name="source_confidence" value="7">7</label>
+          <span>完全确定</span>
+        </div>
+      </fieldset>
+      <label class="text-label" for="xa-explanation">请用一两句话说明：刚才的核验证据能够证明什么，不能证明什么？</label>
+      <textarea id="xa-explanation" name="explanation" rows="4" maxlength="1200" required></textarea>
+      <div class="form-footer"><p id="xa-poststudy-status" class="xa-status" role="status"></p><button id="xa-poststudy-submit" class="secondary-button" type="submit">提交预试</button></div>
+    </form>
+  </main>
+
+  <main id="xa-completion" class="intro-shell hidden">
+    <section class="card completion-card">
+      <p class="eyebrow">预试完成</p><h1>谢谢你的参与</h1>
+      <p>本次预试用于确认两种核验证据形式是否被清楚理解。你的回答不会进入之后的正式实验样本。</p>
+      <div class="completion-code"><span>完成代码</span><strong id="xa-completion-code"></strong></div>
+    </section>
+  </main>
+
+  <script src="./config.js"></script>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

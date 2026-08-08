@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="820" viewBox="0 0 640 820">
+<rect width="640" height="820" rx="28" fill="#101828"/>
+<circle cx="522" cy="126" r="156" fill="#3459e6" opacity=".9"/>
+<circle cx="88" cy="738" r="192" fill="#00a88f" opacity=".82"/>
+<path d="M0 500 C155 410 300 605 640 420 V820 H0Z" fill="#ffffff" opacity=".08"/>
+<text x="54" y="82" fill="#dbe7ff" font-family="Arial,sans-serif" font-size="24" letter-spacing="5">SUMMER SOUND</text>
+<text x="54" y="330" fill="white" font-family="Arial,sans-serif" font-size="76" font-weight="700">夏夜音乐会</text>
+<line x1="56" y1="378" x2="442" y2="378" stroke="white" stroke-width="5"/>
+<text x="58" y="450" fill="white" font-family="Arial,sans-serif" font-size="34">8 月 16 日 · 19:30</text>
+<text x="58" y="502" fill="#dbe7ff" font-family="Arial,sans-serif" font-size="25">河岸剧场</text>
+<text x="58" y="755" fill="white" font-family="Arial,sans-serif" font-size="18">DETERMINISTIC EDITION</text>
+</svg>

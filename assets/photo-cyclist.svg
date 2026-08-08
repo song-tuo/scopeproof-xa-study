@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="t d">
+  <title id="t">黄昏路口的骑车人</title><desc id="d">黄昏时一名骑车人在红灯旁等待的插画</desc>
+  <rect width="640" height="420" rx="20" fill="#e9a06f"/>
+  <rect y="245" width="640" height="175" fill="#354c55"/>
+  <circle cx="520" cy="75" r="42" fill="#f7dd9a"/>
+  <rect x="500" y="115" width="14" height="190" fill="#28363c"/>
+  <rect x="475" y="125" width="64" height="112" rx="12" fill="#222e34"/>
+  <circle cx="507" cy="155" r="15" fill="#e4483e"/>
+  <circle cx="507" cy="195" r="15" fill="#5a675f"/>
+  <circle cx="250" cy="328" r="58" fill="none" stroke="#d8e2df" stroke-width="12"/>
+  <circle cx="405" cy="328" r="58" fill="none" stroke="#d8e2df" stroke-width="12"/>
+  <path d="M250 328 L315 260 L365 328 L285 328 L335 278 L405 328" fill="none" stroke="#f2c759" stroke-width="12" stroke-linejoin="round"/>
+  <circle cx="330" cy="202" r="23" fill="#26383f"/>
+  <path d="M328 226 L305 274 L366 286 M327 232 L372 246" fill="none" stroke="#26383f" stroke-width="15" stroke-linecap="round"/>
+  <path d="M0 355 H640" stroke="#f0e9d9" stroke-width="7" stroke-dasharray="36 25"/>
+</svg>
