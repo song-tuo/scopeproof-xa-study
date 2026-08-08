@@ -29,8 +29,13 @@
   <main id="xa-intro" class="intro-shell hidden">
     <section class="intro-hero">
       <p class="eyebrow">约需五到七分钟</p>
-      <h1>请判断检查结果能说明什么</h1>
-      <p>你会看到四个例子。每个例子都有一件公开作品、一句话和一次电脑检查的结果。请只根据页面内容作答，不需要专业知识。</p>
+      <h1>接下来有四道判断题</h1>
+      <p>每道题都按下面三步完成，不需要专业知识。</p>
+      <ol class="simple-steps">
+        <li><strong>先看</strong><span>看一件作品和一句话。</span></li>
+        <li><strong>再检查</strong><span>点按钮，看电脑检查的结果。</span></li>
+        <li><strong>最后选择</strong><span>判断这次检查能不能证明那句话。</span></li>
+      </ol>
     </section>
     <section class="card consent-card">
       <p class="section-label">参与说明</p>
@@ -47,15 +52,15 @@
   <main id="xa-study" class="shell hidden">
     <header class="study-header">
       <div>
-        <p class="eyebrow">检查结果理解小测试</p>
-        <h1>这次检查能说明什么？</h1>
+        <p class="eyebrow">四道判断题</p>
+        <h1>请判断下面这句话</h1>
       </div>
       <p id="xa-progress" class="progress">正在加载……</p>
     </header>
 
     <section class="card scenario-card">
-      <p class="section-label">事情经过</p>
-      <h2>请先看公开作品和要判断的话</h2>
+      <p class="section-label">第一步：先看</p>
+      <h2>有人发布了一件作品</h2>
       <p id="xa-context"></p>
       <div class="artifact">
         <span id="xa-artifact-label"></span>
@@ -63,7 +68,7 @@
         <p id="xa-artifact-text" class="artifact-text hidden"></p>
       </div>
       <div class="claim-box">
-        <span>要判断的话</span>
+        <span>你要判断这句话</span>
         <p id="xa-claim"></p>
       </div>
     </section>
@@ -71,7 +76,7 @@
     <section class="card evidence-card">
       <div class="section-title-row">
         <div>
-          <p class="section-label">检查</p>
+          <p class="section-label">第二步：看电脑检查</p>
           <h2 id="xa-evidence-heading"></h2>
         </div>
         <span id="xa-mode-chip" class="mode-chip"></span>
@@ -84,43 +89,43 @@
       </div>
       <section id="xa-report" class="xa-report hidden" aria-live="polite">
         <div class="xa-report-meta">
-          <div><span>谁做的检查</span><strong id="xa-verifier"></strong></div>
-          <div><span>检查时间</span><strong id="xa-generated-at"></strong></div>
-          <div><span>结果编号</span><strong id="xa-report-id"></strong></div>
+          <div><span>谁做的</span><strong id="xa-verifier"></strong></div>
+          <div><span>什么时候做的</span><strong id="xa-generated-at"></strong></div>
+          <div class="hidden"><span>结果编号</span><strong id="xa-report-id"></strong></div>
         </div>
         <ol id="xa-transcript" class="transcript"></ol>
         <section id="xa-comparison" class="comparison">
           <p class="section-label">最后结果</p>
           <h3 id="xa-comparison-heading"></h3>
           <div id="xa-comparison-images" class="comparison-grid hidden">
-            <figure><img id="xa-replay-image" src="" alt="重新制作的结果"><figcaption>重新制作的版本</figcaption></figure>
+            <figure><img id="xa-replay-image" src="" alt="电脑重新制作的结果"><figcaption>电脑重新做的</figcaption></figure>
             <div class="comparison-mark" aria-hidden="true">↔</div>
-            <figure><img id="xa-published-image" src="" alt="公开发布的结果"><figcaption>公开的版本</figcaption></figure>
+            <figure><img id="xa-published-image" src="" alt="发布者公开的结果"><figcaption>发布者给的</figcaption></figure>
           </div>
           <div id="xa-comparison-texts" class="comparison-text-grid hidden">
-            <div><span>重新制作的版本</span><p id="xa-replay-text"></p></div>
-            <div><span>公开的版本</span><p id="xa-published-text"></p></div>
+            <div><span>电脑重新做的</span><p id="xa-replay-text"></p></div>
+            <div><span>发布者给的</span><p id="xa-published-text"></p></div>
           </div>
-          <details id="xa-details"><summary>查看检查记录</summary><p id="xa-technical-detail"></p></details>
+          <details id="xa-details"><summary>想看更多</summary><p id="xa-technical-detail"></p></details>
         </section>
       </section>
     </section>
 
     <form id="xa-response-form" class="card response-card">
-      <p class="section-label">你的判断</p>
+      <p class="section-label">第三步：选择答案</p>
       <fieldset id="xa-judgment-fieldset" disabled>
-        <legend>只看上面的检查结果，你认为：</legend>
-        <label><input type="radio" name="judgment" value="supports" required> 能说明这句话是真的。</label>
-        <label><input type="radio" name="judgment" value="contradicts"> 能说明这句话不是真的。</label>
-        <label><input type="radio" name="judgment" value="cannot_determine"> 还不能判断这句话是真是假。</label>
+        <legend>这次检查能证明上面那句话吗？</legend>
+        <label><input type="radio" name="judgment" value="supports" required> 能证明，这句话是真的。</label>
+        <label><input type="radio" name="judgment" value="contradicts"> 能证明，这句话是错的。</label>
+        <label><input type="radio" name="judgment" value="cannot_determine"> 不能证明，现在还不知道真假。</label>
       </fieldset>
-      <label class="range-label" for="xa-confidence">你对上述判断有多大把握？ <output id="xa-confidence-output">请拖动</output></label>
+      <label class="range-label" for="xa-confidence">你有多确定自己选对了？ <output id="xa-confidence-output">请拖动</output></label>
       <input id="xa-confidence" type="range" min="0" max="100" value="50" disabled>
-      <div class="range-hints" aria-hidden="true"><span>完全没把握</span><span>非常有把握</span></div>
+      <div class="range-hints" aria-hidden="true"><span>一点也不确定</span><span>非常确定</span></div>
       <fieldset id="xa-strength-fieldset" disabled>
-        <legend>不管你是否同意那句话，你觉得这份检查结果的说服力有多强？</legend>
-        <div class="xa-scale" role="radiogroup" aria-label="说服力，一到七">
-          <span>很弱</span>
+        <legend>这次检查对判断真假有多大用处？</legend>
+        <div class="xa-scale" role="radiogroup" aria-label="用处大小，一到七">
+          <span>没什么用</span>
           <label><input type="radio" name="evidence_strength" value="1" required>1</label>
           <label><input type="radio" name="evidence_strength" value="2">2</label>
           <label><input type="radio" name="evidence_strength" value="3">3</label>
@@ -128,7 +133,7 @@
           <label><input type="radio" name="evidence_strength" value="5">5</label>
           <label><input type="radio" name="evidence_strength" value="6">6</label>
           <label><input type="radio" name="evidence_strength" value="7">7</label>
-          <span>很强</span>
+          <span>很有用</span>
         </div>
       </fieldset>
       <div class="form-footer">
@@ -140,41 +145,41 @@
 
   <main id="xa-poststudy" class="intro-shell hidden">
     <section class="intro-hero">
-      <p class="eyebrow">最后五个问题</p>
-      <h1>刚才的检查是怎样完成的？</h1>
-      <p>请按你的真实理解回答。答错不会取消参与资格。</p>
+      <p class="eyebrow">最后几个问题</p>
+      <h1>请回想刚才的电脑检查</h1>
+      <p>按你记得的内容回答即可。答错也不会影响报酬。</p>
     </section>
     <form id="xa-poststudy-form" class="card response-card">
-      <fieldset><legend>页面上说，是谁做出了刚才的检查结果？</legend>
-        <label><input type="radio" name="source_identity" value="independent_verifier" required> 页面上写明的独立检查工具</label>
+      <fieldset><legend>是谁做的检查？</legend>
+        <label><input type="radio" name="source_identity" value="independent_verifier" required> 页面上的电脑检查工具</label>
         <label><input type="radio" name="source_identity" value="publisher"> 发布作品的工作室、公司或平台</label>
         <label><input type="radio" name="source_identity" value="browser"> 只由我现在使用的手机或电脑自行判断</label>
         <label><input type="radio" name="source_identity" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>你看到的检查结果是什么时候做出来的？</legend>
-        <label><input type="radio" name="evidence_timing" value="during_session" required> 我点击按钮以后，页面当场做出来的</label>
-        <label><input type="radio" name="evidence_timing" value="before_session"> 我打开页面以前已经做好并保存</label>
+      <fieldset><legend>检查是什么时候做的？</legend>
+        <label><input type="radio" name="evidence_timing" value="during_session" required> 我点击按钮以后，当场做的</label>
+        <label><input type="radio" name="evidence_timing" value="before_session"> 我打开页面以前，已经做好了</label>
         <label><input type="radio" name="evidence_timing" value="mixed"> 有些是当场做的，有些是提前做好的</label>
         <label><input type="radio" name="evidence_timing" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>页面显示了哪三个检查步骤？</legend>
-        <label><input type="radio" name="operations_recall" value="read_generate_compare" required> 读取公开材料、重新制作一份、与公开作品比较</label>
+      <fieldset><legend>电脑做了哪三步？</legend>
+        <label><input type="radio" name="operations_recall" value="read_generate_compare" required> 打开材料、照着再做一份、比较两份作品</label>
         <label><input type="radio" name="operations_recall" value="signature_only"> 只比较一串号码</label>
         <label><input type="radio" name="operations_recall" value="visual_only"> 只由人眼看看两份作品是否相似</label>
         <label><input type="radio" name="operations_recall" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>刚才的检查有没有看到作品最初是怎样制作出来的？</legend>
+      <fieldset><legend>电脑有没有看到发布者最初怎样制作作品？</legend>
         <label><input type="radio" name="original_production_observed" value="yes" required> 是</label>
         <label><input type="radio" name="original_production_observed" value="no"> 否</label>
         <label><input type="radio" name="original_production_observed" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>你有多确定，自己知道是谁做出了刚才的检查结果？</legend>
+      <fieldset><legend>你有多确定，自己知道是谁做的检查？</legend>
         <div class="xa-scale" role="radiogroup" aria-label="确定程度，一到七"><span>完全不确定</span>
           <label><input type="radio" name="source_confidence" value="1" required>1</label><label><input type="radio" name="source_confidence" value="2">2</label><label><input type="radio" name="source_confidence" value="3">3</label><label><input type="radio" name="source_confidence" value="4">4</label><label><input type="radio" name="source_confidence" value="5">5</label><label><input type="radio" name="source_confidence" value="6">6</label><label><input type="radio" name="source_confidence" value="7">7</label>
           <span>完全确定</span>
         </div>
       </fieldset>
-      <label class="text-label" for="xa-explanation">请用一两句话说说：刚才的检查结果能说明什么，不能说明什么？</label>
+      <label class="text-label" for="xa-explanation">请用自己的话说：刚才的电脑检查能说明什么？不能说明什么？</label>
       <textarea id="xa-explanation" name="explanation" rows="4" maxlength="1200" required></textarea>
       <div class="form-footer"><p id="xa-poststudy-status" class="xa-status" role="status"></p><button id="xa-poststudy-submit" class="secondary-button" type="submit">提交回答</button></div>
     </form>

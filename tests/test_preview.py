@@ -66,9 +66,9 @@ with sync_playwright() as playwright:
     assert x_signatures == a_signatures
     assert x_results == [
         "两张海报完全一样",
-        "两段摘要不完全一样",
+        "两段短文不一样",
         "两段说明每个字都一样",
-        "两张图表不完全一样",
+        "两张图表不一样",
     ]
     browser.close()
     print("X/A preview flows and logical evidence signatures: PASS")

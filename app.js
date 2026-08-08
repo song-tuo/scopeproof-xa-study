@@ -15,67 +15,67 @@ const requestedStimulus = ["P01", "S02", "C05", "D08"].includes(params.get("stim
 const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
 const storageKey = "scopeproof_xa_cloud_session_v1";
-const verifierName = "独立检查工具";
+const verifierName = "本页的电脑检查工具";
 const $ = (selector) => document.querySelector(selector);
 
 const stimuli = {
   P01: {
     id: "P01",
-    context: "一家设计工作室发布了一张活动海报，同时公开了制作这张海报所需的资料和固定方法。任何人都可以用这些材料再做一张并进行比较。",
+    context: "一家设计工作室发布了一张海报。它还给出了海报上的文字、颜色、位置和电脑制作方法。",
     artifact: { label: "工作室公开的海报", asset: "./assets/poster-blue.svg", alt: "深蓝色的夏夜音乐会海报" },
-    claim: "只用公开的材料和方法，可以重新做出一张与公开海报完全一样的海报。",
+    claim: "电脑只用这些材料，就能再做出一张完全一样的海报。",
     bundle: {
       type: "image", kind: "poster", published: "./assets/poster-blue.svg",
       input: { title: "夏夜音乐会", subtitle: "夏夜之声", date: "8 月 16 日 · 19:30", place: "河岸剧场", accent: "#3459e6", accent2: "#00a88f" },
-      source: "海报文字、颜色、位置和制作方法",
-      generateLabel: "重新制作一张海报", generateDetail: "检查工具用公开材料重新制作了一张海报。",
-      compareLabel: "把新海报和公开海报逐项比较", same: "两张海报完全一样", different: "两张海报不完全一样"
+      source: "发布者给出的文字、颜色和位置",
+      generateLabel: "照着材料再做一张海报", generateDetail: "电脑照着这些材料做了一张新海报。",
+      compareLabel: "比较两张海报", same: "两张海报完全一样", different: "两张海报不一样"
     }
   },
   S02: {
     id: "S02",
-    context: "一家内容公司发布了一段文章摘要，同时公开了文章要点和固定的写作模板。任何人都可以用这些材料再生成一段摘要并进行比较。",
-    artifact: { label: "公司公开的文章摘要", content: "调查发现清晰导视和纪念品商店；最能改善参观体验；建议先改造入口与主展厅。" },
-    claim: "只用公开的文章要点和模板，可以重新生成一段与公开摘要每个字都一样的摘要。",
+    context: "一家内容公司发布了一段短文。它还给出了短文要写的几个要点和电脑写作方法。",
+    artifact: { label: "公司发布的短文", content: "调查认为，清楚的路标和纪念品商店最能改善参观体验，建议先改造入口和主展厅。" },
+    claim: "电脑只用这些要点，就能再写出一段每个字都一样的短文。",
     bundle: {
-      type: "text", kind: "summary", published: "调查发现清晰导视和纪念品商店；最能改善参观体验；建议先改造入口与主展厅。",
-      input: { finding: "调查发现清晰导视和安静休息区", effect: "最能改善参观体验", recommendation: "建议先改造入口与主展厅" },
-      source: "文章要点、固定模板和公开设置",
-      generateLabel: "重新生成一段摘要", generateDetail: "检查工具用公开材料重新生成了一段摘要。",
-      compareLabel: "把新摘要和公开摘要逐字比较", same: "两段摘要每个字都一样", different: "两段摘要不完全一样"
+      type: "text", kind: "summary", published: "调查认为，清楚的路标和纪念品商店最能改善参观体验，建议先改造入口和主展厅。",
+      input: { finding: "调查认为，清楚的路标和安静休息区", effect: "最能改善参观体验", recommendation: "建议先改造入口和主展厅" },
+      source: "发布者给出的几个要点",
+      generateLabel: "照着要点再写一段短文", generateDetail: "电脑照着这些要点写了一段新短文。",
+      compareLabel: "比较两段短文", same: "两段短文每个字都一样", different: "两段短文不一样"
     }
   },
   C05: {
     id: "C05",
-    context: "一家图片平台发布了一张照片和一段说明，同时公开了识别结果和固定的写作模板。任何人都可以用这些材料再生成一段说明并进行比较。",
+    context: "一家图片平台发布了一张照片和一段说明。它还给出了照片里有什么，以及电脑写说明的方法。",
     artifact: { label: "平台公开的照片与说明", asset: "./assets/photo-cyclist.svg", alt: "路口的一名骑车人", content: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。" },
-    claim: "平台当初写这段图片说明时，用的就是现在公开的这些材料。",
+    claim: "平台当初写这段说明时，用的就是现在给出的这些材料。",
     bundle: {
       type: "text", kind: "caption", published: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。",
       input: { time: "黄昏时", subject: "一名骑车人", action: "红灯旁等待", setting: "城市路口" },
-      source: "照片识别结果、固定模板和公开设置",
-      generateLabel: "重新生成一段图片说明", generateDetail: "检查工具用公开材料重新生成了一段说明。",
-      compareLabel: "把新说明和公开说明逐字比较", same: "两段说明每个字都一样", different: "两段说明不完全一样"
+      source: "发布者给出的照片内容和写法",
+      generateLabel: "照着材料再写一段说明", generateDetail: "电脑照着这些材料写了一段新说明。",
+      compareLabel: "比较两段说明", same: "两段说明每个字都一样", different: "两段说明不一样"
     }
   },
   D08: {
     id: "D08",
-    context: "一个数据团队发布了一张图表，同时公开了图表所用的数据和固定的绘图方法。任何人都可以用这些材料再画一张图表并进行比较。",
+    context: "一个数据团队发布了一张图表。它还给出了图表里的数字和电脑画图的方法。",
     artifact: { label: "团队公开的数据图表", asset: "./assets/chart-energy-altered.svg", alt: "四个季度能源使用量柱状图" },
-    claim: "这些公开材料和绘图方法，现在也正在另一台电脑上使用。",
+    claim: "现在，另一台电脑也正在用这些材料画图表。",
     bundle: {
       type: "image", kind: "chart", published: "./assets/chart-energy-altered.svg",
       input: { title: "四个季度能源使用量", labels: ["第一季", "第二季", "第三季", "第四季"], values: [78, 62, 55, 43], accent: "#16856b" },
-      source: "图表数据、绘图方法和公开设置",
-      generateLabel: "重新画一张图表", generateDetail: "检查工具用公开数据重新画了一张图表。",
-      compareLabel: "把新图表和公开图表逐项比较", same: "两张图表完全一样", different: "两张图表不完全一样"
+      source: "发布者给出的数字和画图方法",
+      generateLabel: "照着材料再画一张图表", generateDetail: "电脑照着这些材料画了一张新图表。",
+      compareLabel: "比较两张图表", same: "两张图表完全一样", different: "两张图表不一样"
     }
   }
 };
 
 const staticReports = {
   P01: { generatedAt: "2026-08-08T10:01:14Z", reportId: "202608080001", replay: "./assets/replay-P01.svg", replayHash: "dad71f02dbd7f3e816ebfbe1e65fc388808f437b405817a26b3c17767e7b7596", publishedHash: "dad71f02dbd7f3e816ebfbe1e65fc388808f437b405817a26b3c17767e7b7596" },
-  S02: { generatedAt: "2026-08-08T10:01:15Z", reportId: "202608080002", replay: "调查发现清晰导视和安静休息区；最能改善参观体验；建议先改造入口与主展厅。", replayHash: "6354c0a018a437b2fbd83c57f7380c87a37c32aaa174dfedc9159df7777643c7", publishedHash: "2d9bca9db51aad695e41db8d5c0fdfbb1cdb9bcf27cb6b8948f13c1b0e2d667e" },
+  S02: { generatedAt: "2026-08-08T10:01:15Z", reportId: "202608080002", replay: "调查认为，清楚的路标和安静休息区最能改善参观体验，建议先改造入口和主展厅。", replayHash: "e5f74daed35be37bcef6ec7503217517ead48e585c3e0c4109f210914ded7775", publishedHash: "44fe4cbdf36beba9d9e1650fa7133fcbe4e9fad644b338d8ef8fdd244825b086" },
   C05: { generatedAt: "2026-08-08T10:01:16Z", reportId: "202608080003", replay: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。", replayHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd", publishedHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd" },
   D08: { generatedAt: "2026-08-08T10:01:17Z", reportId: "202608080004", replay: "./assets/replay-D08.svg", replayHash: "13b2effdc2b92d7e93f7a9f42e3be4d6c5f3d9d034b84c38ad13c733d2193c5e", publishedHash: "ce6ea2e59f2e8372b040a4041fad1d5a2c04c780ed16f737c83882095bab6c1f" }
 };
@@ -138,7 +138,7 @@ ${bars}
 function renderOutput(bundle) {
   if (bundle.kind === "poster") return renderPoster(bundle.input);
   if (bundle.kind === "chart") return renderChart(bundle.input);
-  if (bundle.kind === "summary") return `${bundle.input.finding}；${bundle.input.effect}；${bundle.input.recommendation}。`;
+  if (bundle.kind === "summary") return `${bundle.input.finding}${bundle.input.effect}，${bundle.input.recommendation}。`;
   if (bundle.kind === "caption") return `${bundle.input.time}，${bundle.input.subject}正在${bundle.input.action}，地点是${bundle.input.setting}。`;
   throw new Error("暂时无法完成这项检查");
 }
@@ -156,7 +156,7 @@ async function fetchBytes(path) {
 
 function makeSteps(stimulus, matched) {
   return [
-    { status: "pass", label: "读取公开材料", detail: `已经读入${stimulus.bundle.source}。` },
+    { status: "pass", label: "第一步：打开材料", detail: `电脑打开了${stimulus.bundle.source}。` },
     { status: "pass", label: stimulus.bundle.generateLabel, detail: stimulus.bundle.generateDetail },
     { status: matched ? "pass" : "fail", label: stimulus.bundle.compareLabel, detail: `${matched ? stimulus.bundle.same : stimulus.bundle.different}。` }
   ];
@@ -190,7 +190,7 @@ async function runLiveEvidence(stimulus) {
     report_id: `${Date.now()}${Math.floor(Math.random() * 90 + 10)}`,
     steps: makeSteps(stimulus, matched), matched,
     result: matched ? stimulus.bundle.same : stimulus.bundle.different,
-    technical_detail: `页面刚刚用公开材料重新制作了一份内容，并与公开作品逐项比较。比较结果：${matched ? "完全相同" : "存在不同"}。`,
+    technical_detail: `电脑刚刚照着材料又做了一份，再和发布者给的作品比较。结果是：${matched ? "两份一样" : "两份不一样"}。`,
     evidence_signature: signature,
     comparison: stimulus.bundle.type === "image"
       ? { type: "image", replay: state.replayUrl, published: stimulus.bundle.published }
@@ -208,7 +208,7 @@ async function loadStaticEvidence(stimulus) {
     report_id: frozen.reportId,
     steps: makeSteps(stimulus, matched), matched,
     result: matched ? stimulus.bundle.same : stimulus.bundle.different,
-    technical_detail: `这次检查在你打开页面之前已经完成。工具用公开材料重新制作了一份内容，并与公开作品逐项比较。比较结果：${matched ? "完全相同" : "存在不同"}。`,
+    technical_detail: `电脑在你打开页面以前，已经照着材料又做了一份，并和发布者给的作品比较。结果是：${matched ? "两份一样" : "两份不一样"}。`,
     evidence_signature: signature,
     comparison: stimulus.bundle.type === "image"
       ? { type: "image", replay: frozen.replay, published: stimulus.bundle.published }
@@ -343,18 +343,18 @@ function renderTrial() {
   if (state.index >= state.order.length) { showOnly("#xa-poststudy"); return; }
   const stimulus = currentStimulus();
   state.openedAt = performance.now(); state.evidenceAt = null; state.confidenceTouched = false; state.detailsOpened = false;
-  $("#xa-progress").textContent = `第 ${state.index + 1} / ${state.order.length} 项`;
+  $("#xa-progress").textContent = `第 ${state.index + 1} 题，共 ${state.order.length} 题`;
   $("#xa-context").textContent = stimulus.context; renderArtifact(stimulus); $("#xa-claim").textContent = stimulus.claim; resetEvidence();
   const live = state.evidenceForm === "X";
-  $("#xa-evidence-heading").textContent = live ? "现在做一次检查" : "查看已经做好的检查结果";
-  $("#xa-mode-chip").textContent = live ? "点击后当场检查" : "打开页面前已检查";
+  $("#xa-evidence-heading").textContent = live ? "点一下，让电脑现在检查" : "点一下，看电脑以前做好的检查";
+  $("#xa-mode-chip").textContent = live ? "现在做" : "以前做好";
   $("#xa-source-note").textContent = live
-    ? "点击后，独立检查工具会立即读取公开材料，重新制作一份内容，再和公开作品逐项比较。"
-    : "这次检查在你打开页面之前已经做完并保存。你现在看到的是保存下来的结果，页面不会再做一次。";
-  $("#xa-evidence-button").textContent = live ? "开始检查" : "查看检查结果";
+    ? "你点击后，电脑会马上照着上面的材料再做一份，然后和发布者给的作品比较。"
+    : "电脑早已做完同样的检查。你点击后，只会看到保存的结果，不会再做一遍。";
+  $("#xa-evidence-button").textContent = live ? "让电脑现在检查" : "看以前的检查结果";
   $("#xa-evidence-button").disabled = false;
   $("#xa-response-form").reset(); $("#xa-confidence").value = 50; $("#xa-confidence-output").value = "请拖动"; $("#xa-save-status").textContent = "";
-  $("#xa-submit").textContent = state.index === state.order.length - 1 ? "保存并回答理解问题" : "保存并继续";
+  $("#xa-submit").textContent = state.index === state.order.length - 1 ? "去答最后几个问题" : "下一题";
   setResponseEnabled(false); showOnly("#xa-study");
 }
 
@@ -368,7 +368,9 @@ function renderTranscript(steps) {
 }
 
 function renderEvidence(payload) {
-  $("#xa-verifier").textContent = payload.verifier_name; $("#xa-generated-at").textContent = formatChineseTime(payload.generated_at); $("#xa-report-id").textContent = payload.report_id;
+  $("#xa-verifier").textContent = payload.verifier_name;
+  $("#xa-generated-at").textContent = state.evidenceForm === "X" ? "刚刚" : "你打开本页以前";
+  $("#xa-report-id").textContent = payload.report_id;
   renderTranscript(payload.steps);
   $("#xa-comparison").classList.toggle("match", payload.matched); $("#xa-comparison").classList.toggle("mismatch", !payload.matched);
   $("#xa-comparison-heading").textContent = payload.result;
@@ -423,7 +425,7 @@ $("#xa-confidence").addEventListener("input", (event) => { state.confidenceTouch
 
 $("#xa-response-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!state.confidenceTouched) { $("#xa-save-status").textContent = "请先拖动判断把握度滑块。"; return; }
+  if (!state.confidenceTouched) { $("#xa-save-status").textContent = "请先拖动滑块，告诉我们你有多确定。"; return; }
   const form = new FormData(event.currentTarget); $("#xa-submit").disabled = true;
   const response = {
     p_session_id: state.sessionId, p_token: state.token, p_stimulus_id: currentStimulus().id,
@@ -434,7 +436,7 @@ $("#xa-response-form").addEventListener("submit", async (event) => {
     if (!preview) {
       const payload = await rpc("save_xa_response", response); state.index = Number(payload.current_position);
     } else state.index += 1;
-    $("#xa-save-status").textContent = "回答已保存。"; setTimeout(renderTrial, 180);
+    $("#xa-save-status").textContent = "已经记下你的答案。"; setTimeout(renderTrial, 180);
   } catch (error) { $("#xa-save-status").textContent = error.message; $("#xa-submit").disabled = false; }
 });
 
