@@ -10,6 +10,10 @@
 
 `https://song-tuo.github.io/scopeproof-xa-study/`
 
+数据库控制台：
+
+`https://supabase.com/dashboard/project/fmslskayzdlafsvulfvn`
+
 不要给正式被试添加任何参数。系统会在 X 与 A 之间自动平衡分配。
 
 预览链接不会写入数据库：

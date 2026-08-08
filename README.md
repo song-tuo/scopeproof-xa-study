@@ -10,3 +10,4 @@ ScopeProof 证据形式等价性预试的独立云端版本。
 
 本仓库不包含旧实验的数据库、密钥或数据。
 
+正式页面：<https://song-tuo.github.io/scopeproof-xa-study/>
