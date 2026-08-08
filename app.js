@@ -474,7 +474,7 @@ $("#xa-copy-completion").addEventListener("click", async () => {
   const code = $("#xa-completion-code").textContent.trim();
   try {
     await navigator.clipboard.writeText(code);
-    $("#xa-copy-status").textContent = "完成码已复制。现在请返回回眸数据平台提交。";
+    $("#xa-copy-status").textContent = "完成码已复制。现在请返回回响数据平台提交。";
   } catch {
     $("#xa-copy-status").textContent = `无法自动复制，请手动记录：${code}`;
   }
