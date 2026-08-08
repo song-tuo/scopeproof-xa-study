@@ -31,8 +31,7 @@ def complete_form(page, form):
         detail = page.locator("#xa-technical-detail").text_content()
         signatures.append(detail.rsplit("证据签名 ", 1)[1])
         page.locator('input[name="judgment"][value="cannot_determine"]').check()
-        page.locator("#xa-confidence").fill(str(60 + index))
-        page.locator("#xa-confidence").dispatch_event("input")
+        page.locator('input[name="confidence"][value="70"]').check()
         page.locator('input[name="evidence_strength"][value="4"]').check()
         page.locator("#xa-submit").click()
         if index < 3:

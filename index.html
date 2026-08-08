@@ -119,9 +119,16 @@
         <label><input type="radio" name="judgment" value="contradicts"> 能证明，这句话是错的。</label>
         <label><input type="radio" name="judgment" value="cannot_determine"> 不能证明，现在还不知道真假。</label>
       </fieldset>
-      <label class="range-label" for="xa-confidence">你有多确定自己选对了？ <output id="xa-confidence-output">请拖动</output></label>
-      <input id="xa-confidence" type="range" min="0" max="100" value="50" disabled>
-      <div class="range-hints" aria-hidden="true"><span>一点也不确定</span><span>非常确定</span></div>
+      <fieldset id="xa-confidence-fieldset" disabled>
+        <legend>你有多确定自己选对了？</legend>
+        <div class="confidence-options">
+          <label><input type="radio" name="confidence" value="10" required>一点也不确定</label>
+          <label><input type="radio" name="confidence" value="30">不太确定</label>
+          <label><input type="radio" name="confidence" value="50">一半一半</label>
+          <label><input type="radio" name="confidence" value="70">比较确定</label>
+          <label><input type="radio" name="confidence" value="90">非常确定</label>
+        </div>
+      </fieldset>
       <fieldset id="xa-strength-fieldset" disabled>
         <legend>这次检查对判断真假有多大用处？</legend>
         <div class="xa-scale" role="radiogroup" aria-label="用处大小，一到七">

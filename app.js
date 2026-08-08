@@ -236,8 +236,8 @@ function currentStimulus() { return stimuli[state.order[state.index]]; }
 
 function setResponseEnabled(enabled) {
   $("#xa-judgment-fieldset").disabled = !enabled;
+  $("#xa-confidence-fieldset").disabled = !enabled;
   $("#xa-strength-fieldset").disabled = !enabled;
-  $("#xa-confidence").disabled = !enabled;
   $("#xa-submit").disabled = !enabled;
 }
 
@@ -353,7 +353,7 @@ function renderTrial() {
     : "电脑早已做完同样的检查。你点击后，只会看到保存的结果，不会再做一遍。";
   $("#xa-evidence-button").textContent = live ? "让电脑现在检查" : "看以前的检查结果";
   $("#xa-evidence-button").disabled = false;
-  $("#xa-response-form").reset(); $("#xa-confidence").value = 50; $("#xa-confidence-output").value = "请拖动"; $("#xa-save-status").textContent = "";
+  $("#xa-response-form").reset(); $("#xa-save-status").textContent = "";
   $("#xa-submit").textContent = state.index === state.order.length - 1 ? "去答最后几个问题" : "下一题";
   setResponseEnabled(false); showOnly("#xa-study");
 }
@@ -421,15 +421,15 @@ $("#xa-start").addEventListener("click", async () => {
 });
 $("#xa-evidence-button").addEventListener("click", loadEvidence);
 $("#xa-details").addEventListener("toggle", (event) => { if (event.target.open) state.detailsOpened = true; });
-$("#xa-confidence").addEventListener("input", (event) => { state.confidenceTouched = true; $("#xa-confidence-output").value = event.target.value; });
+$("#xa-confidence-fieldset").addEventListener("change", () => { state.confidenceTouched = true; });
 
 $("#xa-response-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  if (!state.confidenceTouched) { $("#xa-save-status").textContent = "请先拖动滑块，告诉我们你有多确定。"; return; }
+  if (!state.confidenceTouched) { $("#xa-save-status").textContent = "请选择你有多确定。"; return; }
   const form = new FormData(event.currentTarget); $("#xa-submit").disabled = true;
   const response = {
     p_session_id: state.sessionId, p_token: state.token, p_stimulus_id: currentStimulus().id,
-    p_judgment: form.get("judgment"), p_confidence: Number($("#xa-confidence").value), p_evidence_strength: Number(form.get("evidence_strength")),
+    p_judgment: form.get("judgment"), p_confidence: Number(form.get("confidence")), p_evidence_strength: Number(form.get("evidence_strength")),
     p_inspect_ms: Math.round((state.evidenceAt || performance.now()) - state.openedAt), p_response_ms: Math.round(performance.now() - (state.evidenceAt || state.openedAt)), p_details_opened: state.detailsOpened
   };
   try {
