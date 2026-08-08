@@ -279,8 +279,45 @@ async function establishSession({ resume = false } = {}) {
     p_user_agent: navigator.userAgent.slice(0, 400)
   });
   applySession(payload, token);
-  localStorage.setItem(storageKey, JSON.stringify({ session_id: state.sessionId, token }));
+  localStorage.setItem(storageKey, JSON.stringify({
+    session_id: state.sessionId,
+    token,
+    platform_user_id: state.platformUserId
+  }));
   return payload;
+}
+
+async function continueStoredSession(platformUserId) {
+  const stored = parseStoredSession();
+  if (!stored) return false;
+
+  try {
+    const payload = await establishSession({ resume: true });
+    if (payload.platform_user_id !== platformUserId) {
+      $("#xa-platform-status").textContent = "这个编号与本机未完成答卷的编号不一致，请检查后重试。";
+      return true;
+    }
+
+    state.platformUserId = platformUserId;
+    localStorage.setItem(storageKey, JSON.stringify({
+      session_id: state.sessionId,
+      token: state.token,
+      platform_user_id: platformUserId
+    }));
+
+    if (state.index < state.order.length) renderTrial();
+    else if (!payload.poststudy_complete) showOnly("#xa-poststudy");
+    else {
+      const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
+      localStorage.removeItem(storageKey);
+      $("#xa-completion-code").textContent = completed.completion_code;
+      showOnly("#xa-completion");
+    }
+    return true;
+  } catch {
+    localStorage.removeItem(storageKey);
+    return false;
+  }
 }
 
 function renderArtifact(stimulus) {
@@ -358,7 +395,7 @@ async function loadEvidence() {
 }
 
 $("#xa-consent").addEventListener("change", (event) => { $("#xa-start").disabled = !event.target.checked; });
-$("#xa-platform-form").addEventListener("submit", (event) => {
+$("#xa-platform-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const value = $("#xa-platform-user-id").value.trim();
   if (!value || /\s/.test(value)) {
@@ -366,15 +403,17 @@ $("#xa-platform-form").addEventListener("submit", (event) => {
     return;
   }
   state.platformUserId = value;
-  $("#xa-platform-status").textContent = "";
-  showOnly("#xa-intro");
+  $("#xa-platform-status").textContent = "正在核对，请稍候……";
+  const resumed = await continueStoredSession(value);
+  if (!resumed) {
+    $("#xa-platform-status").textContent = "";
+    showOnly("#xa-intro");
+  }
 });
 $("#xa-start").addEventListener("click", async () => {
   $("#xa-start").disabled = true;
   try { await establishSession(); renderTrial(); } catch (error) {
-    $("#xa-intro-status").textContent = /platform_user_id|duplicate key/i.test(error.message)
-      ? "这个用户编号已经开始或完成过本任务。如需继续，请使用原来的手机或电脑，或联系研究人员。"
-      : error.message;
+    $("#xa-intro-status").textContent = error.message;
     $("#xa-start").disabled = false;
   }
 });
@@ -423,15 +462,8 @@ async function resumeOrPreview() {
     return;
   }
   if (!preview && parseStoredSession()) {
-    try {
-      const payload = await establishSession({ resume: true });
-      if (state.index < state.order.length) renderTrial(); else if (!payload.poststudy_complete) showOnly("#xa-poststudy");
-      else {
-        const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
-        localStorage.removeItem(storageKey); $("#xa-completion-code").textContent = completed.completion_code; showOnly("#xa-completion");
-      }
-    } catch { localStorage.removeItem(storageKey); showOnly("#xa-platform-entry"); }
-    return;
+    $("#xa-platform-status").textContent = "这台设备上有一份未完成的答卷。请填写上次使用的用户编号继续。";
+    $("#xa-platform-form button[type='submit']").textContent = "核对编号并继续答题";
   }
   showOnly("#xa-platform-entry");
 }

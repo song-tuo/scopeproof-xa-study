@@ -158,6 +158,7 @@ begin
 
   return jsonb_build_object(
     'session_id', v_session.session_id,
+    'platform_user_id', v_session.platform_user_id,
     'evidence_form', v_session.evidence_form,
     'stimulus_order', to_jsonb(array(
       select stimulus_id from public.xa_probe_assignments where session_id = p_session_id order by position
