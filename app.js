@@ -15,69 +15,69 @@ const requestedStimulus = ["P01", "S02", "C05", "D08"].includes(params.get("stim
 const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
 const storageKey = "scopeproof_xa_cloud_session_v1";
-const verifierName = "ScopeProof 独立核验程序";
+const verifierName = "独立检查工具";
 const $ = (selector) => document.querySelector(selector);
 
 const stimuli = {
   P01: {
     id: "P01",
-    context: "一家设计工作室交付了一张活动海报，并公开了一份证据包。包内含结构化设计参数和确定性绘图程序，任何人都可以发起一次独立检查。",
+    context: "一家设计工作室发布了一张活动海报，同时公开了制作这张海报所需的资料和固定方法。任何人都可以用这些材料再做一张并进行比较。",
     artifact: { label: "工作室公开的海报", asset: "./assets/poster-blue.svg", alt: "深蓝色的夏夜音乐会海报" },
-    claim: "仅用证据包里列出的公开材料，在本次检查中可以生成与发布版逐像素相同的海报。",
+    claim: "只用公开的材料和方法，可以重新做出一张与公开海报完全一样的海报。",
     bundle: {
       type: "image", kind: "poster", published: "./assets/poster-blue.svg",
-      input: { title: "夏夜音乐会", subtitle: "SUMMER SOUND", date: "8 月 16 日 · 19:30", place: "河岸剧场", accent: "#3459e6", accent2: "#00a88f" },
-      source: "结构化设计参数、绘图程序和公开设置",
-      generateLabel: "执行确定性绘图程序", generateDetail: "核验程序根据结构化参数生成了一张新的 SVG 海报。",
-      compareLabel: "完整比较新生成版与发布版", same: "新生成版与发布版逐字节相同", different: "新生成版与发布版并不相同"
+      input: { title: "夏夜音乐会", subtitle: "夏夜之声", date: "8 月 16 日 · 19:30", place: "河岸剧场", accent: "#3459e6", accent2: "#00a88f" },
+      source: "海报文字、颜色、位置和制作方法",
+      generateLabel: "重新制作一张海报", generateDetail: "检查工具用公开材料重新制作了一张海报。",
+      compareLabel: "把新海报和公开海报逐项比较", same: "两张海报完全一样", different: "两张海报不完全一样"
     }
   },
   S02: {
     id: "S02",
-    context: "一家内容公司发布了一段文章摘要，并公开了一份证据包。包内含结构化要点和固定模板程序，任何人都可以发起一次独立检查。",
+    context: "一家内容公司发布了一段文章摘要，同时公开了文章要点和固定的写作模板。任何人都可以用这些材料再生成一段摘要并进行比较。",
     artifact: { label: "公司公开的文章摘要", content: "调查发现清晰导视和纪念品商店；最能改善参观体验；建议先改造入口与主展厅。" },
-    claim: "仅用证据包里列出的公开材料，在本次检查中可以生成与发布版逐字相同的摘要。",
+    claim: "只用公开的文章要点和模板，可以重新生成一段与公开摘要每个字都一样的摘要。",
     bundle: {
       type: "text", kind: "summary", published: "调查发现清晰导视和纪念品商店；最能改善参观体验；建议先改造入口与主展厅。",
       input: { finding: "调查发现清晰导视和安静休息区", effect: "最能改善参观体验", recommendation: "建议先改造入口与主展厅" },
-      source: "结构化文章要点、模板程序和公开设置",
-      generateLabel: "执行确定性摘要程序", generateDetail: "核验程序根据结构化要点生成了一段新的摘要。",
-      compareLabel: "完整比较新生成摘要与发布版", same: "新生成摘要与发布版逐字相同", different: "新生成摘要与发布版并不相同"
+      source: "文章要点、固定模板和公开设置",
+      generateLabel: "重新生成一段摘要", generateDetail: "检查工具用公开材料重新生成了一段摘要。",
+      compareLabel: "把新摘要和公开摘要逐字比较", same: "两段摘要每个字都一样", different: "两段摘要不完全一样"
     }
   },
   C05: {
     id: "C05",
-    context: "一家图片平台公开了一张照片及其说明，并提供了一份证据包。包内含结构化识别结果和固定模板程序，任何人都可以发起一次独立检查。",
+    context: "一家图片平台发布了一张照片和一段说明，同时公开了识别结果和固定的写作模板。任何人都可以用这些材料再生成一段说明并进行比较。",
     artifact: { label: "平台公开的照片与说明", asset: "./assets/photo-cyclist.svg", alt: "路口的一名骑车人", content: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。" },
-    claim: "平台当初制作这段后来公开的图片说明时，实际使用的就是证据包里这套材料。",
+    claim: "平台当初写这段图片说明时，用的就是现在公开的这些材料。",
     bundle: {
       type: "text", kind: "caption", published: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。",
       input: { time: "黄昏时", subject: "一名骑车人", action: "红灯旁等待", setting: "城市路口" },
-      source: "结构化识别结果、模板程序和公开设置",
-      generateLabel: "执行确定性说明程序", generateDetail: "核验程序根据结构化识别结果生成了一段新的说明。",
-      compareLabel: "完整比较新生成说明与发布版", same: "新生成说明与发布版逐字相同", different: "新生成说明与发布版并不相同"
+      source: "照片识别结果、固定模板和公开设置",
+      generateLabel: "重新生成一段图片说明", generateDetail: "检查工具用公开材料重新生成了一段说明。",
+      compareLabel: "把新说明和公开说明逐字比较", same: "两段说明每个字都一样", different: "两段说明不完全一样"
     }
   },
   D08: {
     id: "D08",
-    context: "一个数据团队发布了一张分析图表，并公开了一份证据包。包内含结构化数据和确定性绘图程序，任何人都可以发起一次独立检查。",
+    context: "一个数据团队发布了一张图表，同时公开了图表所用的数据和固定的绘图方法。任何人都可以用这些材料再画一张图表并进行比较。",
     artifact: { label: "团队公开的数据图表", asset: "./assets/chart-energy-altered.svg", alt: "四个季度能源使用量柱状图" },
-    claim: "这份证据包此刻也正在另一台电脑上运行。",
+    claim: "这些公开材料和绘图方法，现在也正在另一台电脑上使用。",
     bundle: {
       type: "image", kind: "chart", published: "./assets/chart-energy-altered.svg",
       input: { title: "四个季度能源使用量", labels: ["第一季", "第二季", "第三季", "第四季"], values: [78, 62, 55, 43], accent: "#16856b" },
-      source: "结构化数据、绘图程序和公开设置",
-      generateLabel: "执行确定性绘图程序", generateDetail: "核验程序根据公开数据生成了一张新的 SVG 图表。",
-      compareLabel: "完整比较新生成图表与发布版", same: "新生成图表与发布版逐字节相同", different: "新生成图表与发布版并不相同"
+      source: "图表数据、绘图方法和公开设置",
+      generateLabel: "重新画一张图表", generateDetail: "检查工具用公开数据重新画了一张图表。",
+      compareLabel: "把新图表和公开图表逐项比较", same: "两张图表完全一样", different: "两张图表不完全一样"
     }
   }
 };
 
 const staticReports = {
-  P01: { generatedAt: "2026-08-08T10:01:14Z", reportId: "XA-A-P01-8F31", replay: "./assets/replay-P01.svg", replayHash: "7819343ea79a63d619e76f83789559e899e745117f6013acf9352ebb3e847ef4", publishedHash: "7819343ea79a63d619e76f83789559e899e745117f6013acf9352ebb3e847ef4" },
-  S02: { generatedAt: "2026-08-08T10:01:15Z", reportId: "XA-A-S02-19C4", replay: "调查发现清晰导视和安静休息区；最能改善参观体验；建议先改造入口与主展厅。", replayHash: "6354c0a018a437b2fbd83c57f7380c87a37c32aaa174dfedc9159df7777643c7", publishedHash: "2d9bca9db51aad695e41db8d5c0fdfbb1cdb9bcf27cb6b8948f13c1b0e2d667e" },
-  C05: { generatedAt: "2026-08-08T10:01:16Z", reportId: "XA-A-C05-71AD", replay: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。", replayHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd", publishedHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd" },
-  D08: { generatedAt: "2026-08-08T10:01:17Z", reportId: "XA-A-D08-42B8", replay: "./assets/replay-D08.svg", replayHash: "bdcb15893436b60e10d310e61c08c19492fb239ebf8ec4566eabf62e05469749", publishedHash: "97ba565210ddc5e48df79b9c9b7fa54b6db09d36d327fbbec88d7106469de9cf" }
+  P01: { generatedAt: "2026-08-08T10:01:14Z", reportId: "202608080001", replay: "./assets/replay-P01.svg", replayHash: "dad71f02dbd7f3e816ebfbe1e65fc388808f437b405817a26b3c17767e7b7596", publishedHash: "dad71f02dbd7f3e816ebfbe1e65fc388808f437b405817a26b3c17767e7b7596" },
+  S02: { generatedAt: "2026-08-08T10:01:15Z", reportId: "202608080002", replay: "调查发现清晰导视和安静休息区；最能改善参观体验；建议先改造入口与主展厅。", replayHash: "6354c0a018a437b2fbd83c57f7380c87a37c32aaa174dfedc9159df7777643c7", publishedHash: "2d9bca9db51aad695e41db8d5c0fdfbb1cdb9bcf27cb6b8948f13c1b0e2d667e" },
+  C05: { generatedAt: "2026-08-08T10:01:16Z", reportId: "202608080003", replay: "黄昏时，一名骑车人正在红灯旁等待，地点是城市路口。", replayHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd", publishedHash: "772fe2dfe5d12390a56b643c4436ac90363388fe6693f44f1c8c1d3cf3b763cd" },
+  D08: { generatedAt: "2026-08-08T10:01:17Z", reportId: "202608080004", replay: "./assets/replay-D08.svg", replayHash: "13b2effdc2b92d7e93f7a9f42e3be4d6c5f3d9d034b84c38ad13c733d2193c5e", publishedHash: "ce6ea2e59f2e8372b040a4041fad1d5a2c04c780ed16f737c83882095bab6c1f" }
 };
 
 const state = {
@@ -109,7 +109,7 @@ function renderPoster(input) {
 <line x1="56" y1="378" x2="442" y2="378" stroke="white" stroke-width="5"/>
 <text x="58" y="450" fill="white" font-family="Arial,sans-serif" font-size="34">${date}</text>
 <text x="58" y="502" fill="#dbe7ff" font-family="Arial,sans-serif" font-size="25">${place}</text>
-<text x="58" y="755" fill="white" font-family="Arial,sans-serif" font-size="18">DETERMINISTIC EDITION</text>
+<text x="58" y="755" fill="white" font-family="Arial,sans-serif" font-size="18">公开版本</text>
 </svg>
 `;
 }
@@ -130,7 +130,7 @@ function renderChart(input) {
 <text x="42" y="55" fill="#17211b" font-family="Arial,sans-serif" font-size="28" font-weight="700">${escapeXml(input.title)}</text>
 <line x1="70" y1="${baseline}" x2="640" y2="${baseline}" stroke="#9aa69e" stroke-width="2"/>
 ${bars}
-<text x="638" y="445" text-anchor="end" fill="#7a877e" font-family="Arial,sans-serif" font-size="14">公开数据 · 确定性绘制</text>
+<text x="638" y="445" text-anchor="end" fill="#7a877e" font-family="Arial,sans-serif" font-size="14">公开数据 · 固定方式绘制</text>
 </svg>
 `;
 }
@@ -140,7 +140,7 @@ function renderOutput(bundle) {
   if (bundle.kind === "chart") return renderChart(bundle.input);
   if (bundle.kind === "summary") return `${bundle.input.finding}；${bundle.input.effect}；${bundle.input.recommendation}。`;
   if (bundle.kind === "caption") return `${bundle.input.time}，${bundle.input.subject}正在${bundle.input.action}，地点是${bundle.input.setting}。`;
-  throw new Error("不支持的核验程序");
+  throw new Error("暂时无法完成这项检查");
 }
 
 async function sha256(bytes) {
@@ -156,10 +156,18 @@ async function fetchBytes(path) {
 
 function makeSteps(stimulus, matched) {
   return [
-    { status: "pass", label: "读取证据包中的公开材料", detail: `${stimulus.bundle.source}已载入。` },
+    { status: "pass", label: "读取公开材料", detail: `已经读入${stimulus.bundle.source}。` },
     { status: "pass", label: stimulus.bundle.generateLabel, detail: stimulus.bundle.generateDetail },
     { status: matched ? "pass" : "fail", label: stimulus.bundle.compareLabel, detail: `${matched ? stimulus.bundle.same : stimulus.bundle.different}。` }
   ];
+}
+
+function formatChineseTime(value) {
+  const date = new Date(value);
+  return new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric", month: "long", day: "numeric",
+    hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false
+  }).format(date);
 }
 
 async function evidenceSignature(stimulusId, matched, replayHash, publishedHash) {
@@ -179,10 +187,10 @@ async function runLiveEvidence(stimulus) {
   return {
     verifier_name: verifierName,
     generated_at: new Date().toISOString(),
-    report_id: `XA-X-${stimulus.id}-${randomToken(2).toUpperCase()}`,
+    report_id: `${Date.now()}${Math.floor(Math.random() * 90 + 10)}`,
     steps: makeSteps(stimulus, matched), matched,
     result: matched ? stimulus.bundle.same : stimulus.bundle.different,
-    technical_detail: `本次浏览器内执行耗时 ${Math.max(1, Math.round((performance.now() - started) * 1000))} μs · 生成结果 SHA-256 ${replayHash.slice(0, 16)} · 发布结果 SHA-256 ${publishedHash.slice(0, 16)}`,
+    technical_detail: `页面刚刚用公开材料重新制作了一份内容，并与公开作品逐项比较。比较结果：${matched ? "完全相同" : "存在不同"}。`,
     evidence_signature: signature,
     comparison: stimulus.bundle.type === "image"
       ? { type: "image", replay: state.replayUrl, published: stimulus.bundle.published }
@@ -200,7 +208,7 @@ async function loadStaticEvidence(stimulus) {
     report_id: frozen.reportId,
     steps: makeSteps(stimulus, matched), matched,
     result: matched ? stimulus.bundle.same : stimulus.bundle.different,
-    technical_detail: `先前真实执行 · 生成结果 SHA-256 ${frozen.replayHash.slice(0, 16)} · 发布结果 SHA-256 ${frozen.publishedHash.slice(0, 16)}`,
+    technical_detail: `这次检查在你打开页面之前已经完成。工具用公开材料重新制作了一份内容，并与公开作品逐项比较。比较结果：${matched ? "完全相同" : "存在不同"}。`,
     evidence_signature: signature,
     comparison: stimulus.bundle.type === "image"
       ? { type: "image", replay: frozen.replay, published: stimulus.bundle.published }
@@ -211,7 +219,11 @@ async function loadStaticEvidence(stimulus) {
 async function rpc(name, args) {
   if (!supabase) throw new Error("云端数据服务尚未配置，请联系研究者。");
   const { data, error } = await supabase.rpc(name, args);
-  if (error) throw new Error(error.message || "云端保存失败");
+  if (error) {
+    console.error(error);
+    const duplicate = /platform_user_id|duplicate key/i.test(error.message || "");
+    throw new Error(duplicate ? "这个用户编号已经使用过。" : "保存失败，请检查网络后再试。如果仍然失败，请联系研究人员。");
+  }
   return data;
 }
 
@@ -254,7 +266,7 @@ async function establishSession({ resume = false } = {}) {
   }
   if (resume) {
     const stored = parseStoredSession();
-    if (!stored) throw new Error("没有可恢复的会话");
+    if (!stored) throw new Error("没有可以继续的答题记录");
     const payload = await rpc("get_xa_session", { p_session_id: stored.session_id, p_token: stored.token });
     applySession(payload, stored.token);
     return payload;
@@ -297,12 +309,12 @@ function renderTrial() {
   $("#xa-progress").textContent = `第 ${state.index + 1} / ${state.order.length} 项`;
   $("#xa-context").textContent = stimulus.context; renderArtifact(stimulus); $("#xa-claim").textContent = stimulus.claim; resetEvidence();
   const live = state.evidenceForm === "X";
-  $("#xa-evidence-heading").textContent = live ? "现在运行独立核验" : "查看独立核验报告";
-  $("#xa-mode-chip").textContent = live ? "当前会话真实执行" : "先前真实执行的报告";
+  $("#xa-evidence-heading").textContent = live ? "现在做一次检查" : "查看已经做好的检查结果";
+  $("#xa-mode-chip").textContent = live ? "点击后当场检查" : "打开页面前已检查";
   $("#xa-source-note").textContent = live
-    ? "点击后，ScopeProof 独立核验程序会在当前页面真实读取公开材料、重新生成并完整比较结果。"
-    : "这份报告由同一个 ScopeProof 独立核验程序在你进入页面以前真实执行并保存；当前页面只展示报告，不重新运行。";
-  $("#xa-evidence-button").textContent = live ? "现在运行独立核验" : "查看已生成的核验报告";
+    ? "点击后，独立检查工具会立即读取公开材料，重新制作一份内容，再和公开作品逐项比较。"
+    : "这次检查在你打开页面之前已经做完并保存。你现在看到的是保存下来的结果，页面不会再做一次。";
+  $("#xa-evidence-button").textContent = live ? "开始检查" : "查看检查结果";
   $("#xa-evidence-button").disabled = false;
   $("#xa-response-form").reset(); $("#xa-confidence").value = 50; $("#xa-confidence-output").value = "请拖动"; $("#xa-save-status").textContent = "";
   $("#xa-submit").textContent = state.index === state.order.length - 1 ? "保存并回答理解问题" : "保存并继续";
@@ -319,11 +331,11 @@ function renderTranscript(steps) {
 }
 
 function renderEvidence(payload) {
-  $("#xa-verifier").textContent = payload.verifier_name; $("#xa-generated-at").textContent = payload.generated_at; $("#xa-report-id").textContent = payload.report_id;
+  $("#xa-verifier").textContent = payload.verifier_name; $("#xa-generated-at").textContent = formatChineseTime(payload.generated_at); $("#xa-report-id").textContent = payload.report_id;
   renderTranscript(payload.steps);
   $("#xa-comparison").classList.toggle("match", payload.matched); $("#xa-comparison").classList.toggle("mismatch", !payload.matched);
   $("#xa-comparison-heading").textContent = payload.result;
-  $("#xa-technical-detail").textContent = `${payload.technical_detail} · 证据签名 ${payload.evidence_signature.slice(0, 16)}`;
+  $("#xa-technical-detail").textContent = payload.technical_detail;
   if (payload.comparison.type === "image") {
     $("#xa-comparison-images").classList.remove("hidden"); $("#xa-replay-image").src = payload.comparison.replay; $("#xa-published-image").src = payload.comparison.published;
   } else {
@@ -350,7 +362,7 @@ $("#xa-platform-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const value = $("#xa-platform-user-id").value.trim();
   if (!value || /\s/.test(value)) {
-    $("#xa-platform-status").textContent = "请完整粘贴用户 ID；ID 中不能包含空格。";
+    $("#xa-platform-status").textContent = "请完整粘贴用户编号，编号中不能有空格。";
     return;
   }
   state.platformUserId = value;
@@ -361,7 +373,7 @@ $("#xa-start").addEventListener("click", async () => {
   $("#xa-start").disabled = true;
   try { await establishSession(); renderTrial(); } catch (error) {
     $("#xa-intro-status").textContent = /platform_user_id|duplicate key/i.test(error.message)
-      ? "此用户 ID 已经开始或完成过本任务；如需恢复，请使用原来的浏览器，或联系研究者。"
+      ? "这个用户编号已经开始或完成过本任务。如需继续，请使用原来的手机或电脑，或联系研究人员。"
       : error.message;
     $("#xa-start").disabled = false;
   }
@@ -398,7 +410,7 @@ $("#xa-poststudy-form").addEventListener("submit", async (event) => {
       });
       const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
       localStorage.removeItem(storageKey); $("#xa-completion-code").textContent = completed.completion_code;
-    } else $("#xa-completion-code").textContent = `PREV-${state.evidenceForm}`;
+    } else $("#xa-completion-code").textContent = state.evidenceForm === "X" ? "000001" : "000002";
     showOnly("#xa-completion");
   } catch (error) { $("#xa-poststudy-status").textContent = error.message; $("#xa-poststudy-submit").disabled = false; }
 });

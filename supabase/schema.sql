@@ -10,8 +10,8 @@ create table if not exists public.xa_probe_sessions (
   platform_user_id text not null unique
     check (char_length(btrim(platform_user_id)) >= 1 and platform_user_id !~ '[[:space:]]'),
   completion_code text not null unique
-    default upper(encode(extensions.gen_random_bytes(3), 'hex'))
-    check (completion_code ~ '^[0-9A-F]{6}$'),
+    default lpad(floor(random() * 1000000)::integer::text, 6, '0')
+    check (completion_code ~ '^[0-9]{6}$'),
   evidence_form text not null check (evidence_form in ('X', 'A')),
   consent_version text not null,
   created_at timestamptz not null default now(),

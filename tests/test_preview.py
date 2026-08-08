@@ -48,7 +48,7 @@ def complete_form(page, form):
     page.locator("#xa-poststudy-submit").click()
     page.locator("#xa-completion").wait_for(state="visible")
     completion_code = page.locator("#xa-completion-code").inner_text()
-    assert completion_code == f"PREV-{form}"
+    assert completion_code == ("000001" if form == "X" else "000002")
     assert len(completion_code) == 6
     assert page.locator("#xa-platform-return").get_attribute("href") == CALLBACK_URL
     return results, signatures
@@ -65,10 +65,10 @@ with sync_playwright() as playwright:
     assert x_results == a_results
     assert x_signatures == a_signatures
     assert x_results == [
-        "新生成版与发布版逐字节相同",
-        "新生成摘要与发布版并不相同",
-        "新生成说明与发布版逐字相同",
-        "新生成图表与发布版并不相同",
+        "两张海报完全一样",
+        "两段摘要不完全一样",
+        "两段说明每个字都一样",
+        "两张图表不完全一样",
     ]
     browser.close()
     print("X/A preview flows and logical evidence signatures: PASS")
