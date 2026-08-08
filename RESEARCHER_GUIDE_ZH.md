@@ -16,6 +16,8 @@
 
 不要给正式被试添加任何参数。系统会在 X 与 A 之间自动平衡分配。
 
+系统不设置总作答人数上限。每个新的回眸用户 ID 都可以建立一个会话；同一 ID 只允许提交一次，以避免重复领酬。
+
 预览链接不会写入数据库：
 
 - X：`?form=X&preview=1`
@@ -50,6 +52,22 @@ order by created_at desc;
 5. `xa_probe_events`
 
 以 `session_id` 连接。正式分析只保留 `xa_probe_sessions.status = 'complete'` 的会话。
+
+`xa_probe_sessions.platform_user_id` 用于匹配回眸身份，`completion_code` 是返回给作答者的 6 位完成码。
+
+## 回眸数据推送配置
+
+问卷推送名称：
+
+`ScopeProof 流程证据理解度预试（约 5–7 分钟）`
+
+作答者填写前提示说明：
+
+`本任务将跳转至外部实验页面，全程约 5–7 分钟，不需要专业知识。进入页面后，请完整粘贴你在回眸数据平台看到的用户 ID（ID 长度不固定），用于审核数据、匹配身份和发放报酬。完成全部问题后，页面会显示一个 6 位完成码；请复制或截图保存，并返回回眸数据平台提交。请勿重复作答；若中途关闭，请使用同一浏览器重新打开以恢复进度。`
+
+完成后的返回地址：
+
+`https://www.huixiangdata.com/transferPage?url=https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411`
 
 ## 安全设计
 

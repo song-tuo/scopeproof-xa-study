@@ -2,6 +2,21 @@ from playwright.sync_api import sync_playwright
 
 
 BASE = "http://127.0.0.1:4177/"
+CALLBACK_URL = (
+    "https://www.huixiangdata.com/transferPage?url="
+    "https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411"
+)
+
+
+def verify_platform_entry(page):
+    page.goto(BASE)
+    page.wait_for_load_state("networkidle")
+    platform_id = page.locator("#xa-platform-user-id")
+    assert platform_id.get_attribute("maxlength") is None
+    assert platform_id.get_attribute("minlength") is None
+    platform_id.fill("HXUSER202608081234")
+    page.locator("#xa-platform-form").locator('button[type="submit"]').click()
+    page.locator("#xa-intro").wait_for(state="visible")
 
 
 def complete_form(page, form):
@@ -32,12 +47,17 @@ def complete_form(page, form):
     page.locator("#xa-explanation").fill("能够证明公开材料可按所示步骤重放；不能证明最初制作历史或其他电脑当前状态。")
     page.locator("#xa-poststudy-submit").click()
     page.locator("#xa-completion").wait_for(state="visible")
-    assert page.locator("#xa-completion-code").inner_text() == f"PREVIEW-{form}"
+    completion_code = page.locator("#xa-completion-code").inner_text()
+    assert completion_code == f"PREV-{form}"
+    assert len(completion_code) == 6
+    assert page.locator("#xa-platform-return").get_attribute("href") == CALLBACK_URL
     return results, signatures
 
 
 with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
+    entry_page = browser.new_page()
+    verify_platform_entry(entry_page)
     page_x = browser.new_page()
     x_results, x_signatures = complete_form(page_x, "X")
     page_a = browser.new_page()

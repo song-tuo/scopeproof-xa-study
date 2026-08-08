@@ -345,6 +345,31 @@ textarea {
   line-height: 1.6;
   resize: vertical;
 }
+.platform-id-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--ink);
+  font: 700 1.15rem ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.08em;
+}
+.platform-id-input:focus { outline: 3px solid rgba(25, 92, 66, 0.15); border-color: var(--green); }
+.field-help { margin: 9px 0 24px; color: var(--muted); font-size: 0.86rem; line-height: 1.6; }
+.platform-card .form-footer { align-items: flex-end; }
+.completion-copy { margin-top: 16px; }
+.completion-status { margin: 10px 0 0; color: var(--green); }
+.completion-return {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  margin-top: 20px;
+  color: #ffffff;
+  text-decoration: none;
+}
+.completion-note { margin: 14px 0 0; font-size: 0.82rem; }
 .select-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

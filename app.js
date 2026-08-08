@@ -81,7 +81,7 @@ const staticReports = {
 };
 
 const state = {
-  sessionId: null, token: null, evidenceForm: null, order: [], index: 0,
+  sessionId: null, token: null, platformUserId: null, evidenceForm: null, order: [], index: 0,
   openedAt: null, evidenceAt: null, confidenceTouched: false, detailsOpened: false,
   replayUrl: null
 };
@@ -216,7 +216,7 @@ async function rpc(name, args) {
 }
 
 function showOnly(selector) {
-  ["#xa-intro", "#xa-study", "#xa-poststudy", "#xa-completion"].forEach((id) => $(id).classList.toggle("hidden", id !== selector));
+  ["#xa-platform-entry", "#xa-intro", "#xa-study", "#xa-poststudy", "#xa-completion"].forEach((id) => $(id).classList.toggle("hidden", id !== selector));
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
@@ -248,6 +248,7 @@ function applySession(payload, token) {
 async function establishSession({ resume = false } = {}) {
   if (preview) {
     const order = ["P01", "S02", "C05", "D08"];
+    state.platformUserId = "PREV01";
     applySession({ session_id: `preview-${randomToken(8)}`, evidence_form: requestedForm || "X", stimulus_order: order, current_position: 0 }, "preview");
     return { poststudy_complete: false };
   }
@@ -259,7 +260,12 @@ async function establishSession({ resume = false } = {}) {
     return payload;
   }
   const token = randomToken(32);
-  const payload = await rpc("create_xa_session", { p_token: token, p_consent_version: "scopeproof-xa-zh-v2", p_user_agent: navigator.userAgent.slice(0, 400) });
+  const payload = await rpc("create_xa_session", {
+    p_token: token,
+    p_platform_user_id: state.platformUserId,
+    p_consent_version: "scopeproof-xa-zh-v3-huixiang",
+    p_user_agent: navigator.userAgent.slice(0, 400)
+  });
   applySession(payload, token);
   localStorage.setItem(storageKey, JSON.stringify({ session_id: state.sessionId, token }));
   return payload;
@@ -340,9 +346,25 @@ async function loadEvidence() {
 }
 
 $("#xa-consent").addEventListener("change", (event) => { $("#xa-start").disabled = !event.target.checked; });
+$("#xa-platform-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const value = $("#xa-platform-user-id").value.trim();
+  if (!value || /\s/.test(value)) {
+    $("#xa-platform-status").textContent = "请完整粘贴用户 ID；ID 中不能包含空格。";
+    return;
+  }
+  state.platformUserId = value;
+  $("#xa-platform-status").textContent = "";
+  showOnly("#xa-intro");
+});
 $("#xa-start").addEventListener("click", async () => {
   $("#xa-start").disabled = true;
-  try { await establishSession(); renderTrial(); } catch (error) { $("#xa-intro-status").textContent = error.message; $("#xa-start").disabled = false; }
+  try { await establishSession(); renderTrial(); } catch (error) {
+    $("#xa-intro-status").textContent = /platform_user_id|duplicate key/i.test(error.message)
+      ? "此用户 ID 已经开始或完成过本任务；如需恢复，请使用原来的浏览器，或联系研究者。"
+      : error.message;
+    $("#xa-start").disabled = false;
+  }
 });
 $("#xa-evidence-button").addEventListener("click", loadEvidence);
 $("#xa-details").addEventListener("toggle", (event) => { if (event.target.open) state.detailsOpened = true; });
@@ -376,13 +398,18 @@ $("#xa-poststudy-form").addEventListener("submit", async (event) => {
       });
       const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
       localStorage.removeItem(storageKey); $("#xa-completion-code").textContent = completed.completion_code;
-    } else $("#xa-completion-code").textContent = `PREVIEW-${state.evidenceForm}`;
+    } else $("#xa-completion-code").textContent = `PREV-${state.evidenceForm}`;
     showOnly("#xa-completion");
   } catch (error) { $("#xa-poststudy-status").textContent = error.message; $("#xa-poststudy-submit").disabled = false; }
 });
 
 async function resumeOrPreview() {
   if (skipIntro) { await establishSession(); renderTrial(); return; }
+  if (preview) {
+    state.platformUserId = "PREV01";
+    showOnly("#xa-intro");
+    return;
+  }
   if (!preview && parseStoredSession()) {
     try {
       const payload = await establishSession({ resume: true });
@@ -391,8 +418,20 @@ async function resumeOrPreview() {
         const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
         localStorage.removeItem(storageKey); $("#xa-completion-code").textContent = completed.completion_code; showOnly("#xa-completion");
       }
-    } catch { localStorage.removeItem(storageKey); }
+    } catch { localStorage.removeItem(storageKey); showOnly("#xa-platform-entry"); }
+    return;
   }
+  showOnly("#xa-platform-entry");
 }
+
+$("#xa-copy-completion").addEventListener("click", async () => {
+  const code = $("#xa-completion-code").textContent.trim();
+  try {
+    await navigator.clipboard.writeText(code);
+    $("#xa-copy-status").textContent = "完成码已复制。现在请返回回眸数据平台提交。";
+  } catch {
+    $("#xa-copy-status").textContent = `无法自动复制，请手动记录：${code}`;
+  }
+});
 
 resumeOrPreview().catch((error) => { $("#xa-intro-status").textContent = `加载失败：${error.message}`; });

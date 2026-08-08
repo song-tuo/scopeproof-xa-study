@@ -7,6 +7,11 @@ create extension if not exists pgcrypto with schema extensions;
 create table if not exists public.xa_probe_sessions (
   session_id uuid primary key default extensions.gen_random_uuid(),
   token_hash bytea not null,
+  platform_user_id text not null unique
+    check (char_length(btrim(platform_user_id)) >= 1 and platform_user_id !~ '[[:space:]]'),
+  completion_code text not null unique
+    default upper(encode(extensions.gen_random_bytes(3), 'hex'))
+    check (completion_code ~ '^[0-9A-F]{6}$'),
   evidence_form text not null check (evidence_form in ('X', 'A')),
   consent_version text not null,
   created_at timestamptz not null default now(),
@@ -77,6 +82,7 @@ revoke usage, select on all sequences in schema public from anon, authenticated;
 
 create or replace function public.create_xa_session(
   p_token text,
+  p_platform_user_id text,
   p_consent_version text,
   p_user_agent text default ''
 ) returns jsonb
@@ -94,6 +100,8 @@ declare
   i integer;
 begin
   if p_token !~ '^[0-9a-f]{64}$' then raise exception 'invalid session token'; end if;
+  if char_length(btrim(p_platform_user_id)) < 1 or p_platform_user_id ~ '[[:space:]]'
+    then raise exception 'invalid platform user id'; end if;
   if char_length(p_consent_version) not between 1 and 80 then raise exception 'invalid consent version'; end if;
 
   perform pg_advisory_xact_lock(hashtext('scopeproof-xa-form-balance'));
@@ -104,8 +112,8 @@ begin
   else v_form := case when random() < 0.5 then 'X' else 'A' end;
   end if;
 
-  insert into public.xa_probe_sessions(session_id, token_hash, evidence_form, consent_version, user_agent)
-  values (v_session_id, extensions.digest(p_token, 'sha256'), v_form, left(p_consent_version, 80), left(coalesce(p_user_agent, ''), 400));
+  insert into public.xa_probe_sessions(session_id, token_hash, platform_user_id, evidence_form, consent_version, user_agent)
+  values (v_session_id, extensions.digest(p_token, 'sha256'), p_platform_user_id, v_form, left(p_consent_version, 80), left(coalesce(p_user_agent, ''), 400));
 
   for i in 0..3 loop
     insert into public.xa_probe_assignments(session_id, position, stimulus_id)
@@ -299,6 +307,8 @@ language plpgsql
 security definer
 set search_path = public, extensions, pg_temp
 as $$
+declare
+  v_completion_code text;
 begin
   if not exists (
     select 1 from public.xa_probe_sessions
@@ -309,19 +319,20 @@ begin
   then raise exception 'probe incomplete'; end if;
   update public.xa_probe_sessions
   set status = 'complete', completed_at = coalesce(completed_at, now())
-  where session_id = p_session_id;
-  return jsonb_build_object('complete', true, 'completion_code', 'XA-' || upper(left(p_session_id::text, 8)));
+  where session_id = p_session_id
+  returning completion_code into v_completion_code;
+  return jsonb_build_object('complete', true, 'completion_code', v_completion_code);
 end;
 $$;
 
-revoke all on function public.create_xa_session(text, text, text) from public;
+revoke all on function public.create_xa_session(text, text, text, text) from public;
 revoke all on function public.get_xa_session(uuid, text) from public;
 revoke all on function public.mark_xa_evidence(uuid, text, text, text, text) from public;
 revoke all on function public.save_xa_response(uuid, text, text, text, integer, integer, integer, integer, boolean) from public;
 revoke all on function public.save_xa_poststudy(uuid, text, text, text, text, text, integer, text) from public;
 revoke all on function public.complete_xa_session(uuid, text) from public;
 
-grant execute on function public.create_xa_session(text, text, text) to anon;
+grant execute on function public.create_xa_session(text, text, text, text) to anon;
 grant execute on function public.get_xa_session(uuid, text) to anon;
 grant execute on function public.mark_xa_evidence(uuid, text, text, text, text) to anon;
 grant execute on function public.save_xa_response(uuid, text, text, text, integer, integer, integer, integer, boolean) to anon;
@@ -340,4 +351,3 @@ from public.xa_probe_sessions
 group by evidence_form;
 
 revoke all on public.xa_probe_researcher_status from anon, authenticated;
-

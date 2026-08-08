@@ -9,7 +9,24 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <main id="xa-intro" class="intro-shell">
+  <main id="xa-platform-entry" class="intro-shell">
+    <section class="intro-hero">
+      <p class="eyebrow">回眸数据 · 身份匹配</p>
+      <h1>开始前，请填写用户 ID</h1>
+      <p>请从回眸数据平台完整复制你的用户 ID。ID 长度不固定，只用于审核数据、匹配参与身份和发放报酬。</p>
+    </section>
+    <form id="xa-platform-form" class="card platform-card">
+      <label class="text-label" for="xa-platform-user-id">回眸数据用户 ID</label>
+      <input id="xa-platform-user-id" class="platform-id-input" name="platform_user_id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="完整粘贴回眸数据用户 ID" required>
+      <p class="field-help">用户 ID 不限位数，可以复制粘贴。请勿填写姓名、手机号或其他信息。</p>
+      <div class="form-footer">
+        <p id="xa-platform-status" class="xa-status" role="status"></p>
+        <button class="secondary-button" type="submit">继续阅读参与说明</button>
+      </div>
+    </form>
+  </main>
+
+  <main id="xa-intro" class="intro-shell hidden">
     <section class="intro-hero">
       <p class="eyebrow">5–7 分钟理解度预试</p>
       <h1>请判断流程证据能够说明什么</h1>
@@ -17,7 +34,7 @@
     </section>
     <section class="card consent-card">
       <p class="section-label">参与说明</p>
-      <p>参与完全自愿，可以随时关闭页面退出。系统不要求姓名或联系方式；回答仅用于改进正式实验材料。</p>
+      <p>参与完全自愿，可以随时关闭页面退出。系统不要求姓名或联系方式；仅保存你提供的回眸用户 ID，用于匹配数据和发放报酬。其余回答仅用于改进正式实验材料。</p>
       <label class="consent-check">
         <input id="xa-consent" type="checkbox">
         <span>我已年满 18 岁，阅读并理解上述说明，自愿参加本次预试。</span>
@@ -164,9 +181,13 @@
 
   <main id="xa-completion" class="intro-shell hidden">
     <section class="card completion-card">
-      <p class="eyebrow">预试完成</p><h1>谢谢你的参与</h1>
-      <p>本次预试用于确认两种核验证据形式是否被清楚理解。你的回答不会进入之后的正式实验样本。</p>
-      <div class="completion-code"><span>完成代码</span><strong id="xa-completion-code"></strong></div>
+      <p class="eyebrow">预试完成</p><h1>请保存完成码</h1>
+      <p>你的回答已经保存。请复制下面的 6 位完成码，并返回回眸数据平台提交；完成码验证通过后才算完成本次任务。</p>
+      <div class="completion-code"><span>6 位完成码</span><strong id="xa-completion-code"></strong></div>
+      <button id="xa-copy-completion" class="secondary-button completion-copy" type="button">复制完成码</button>
+      <p id="xa-copy-status" class="xa-status completion-status" role="status"></p>
+      <a id="xa-platform-return" class="primary-button completion-return" href="https://www.huixiangdata.com/transferPage?url=https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411">返回回眸数据并提交完成码</a>
+      <p class="completion-note">任务编号：202608085411。若无法复制，请手动记录完成码或截图保存本页。</p>
     </section>
   </main>
 
