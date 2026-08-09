@@ -155,6 +155,25 @@ button:disabled { cursor: not-allowed; opacity: 0.45; }
   border-radius: 14px;
   background: #ffffff;
 }
+/* 边界声明。X 与 A 共用，样式与 .comparison 同构，常显不折叠。 */
+.scope-note {
+  margin-top: 16px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #ffffff;
+}
+.scope-note-label {
+  font-size: 0.82rem;
+  font-weight: 750;
+  letter-spacing: 0.02em;
+}
+.scope-note-can { color: var(--green); }
+.scope-note-cannot { color: var(--red); margin-top: 16px; }
+.scope-note ul { margin: 8px 0 0; padding-left: 20px; }
+.scope-note li { color: var(--ink); line-height: 1.7; }
+.scope-note li + li { margin-top: 6px; }
+
 .comparison h3 { margin-bottom: 18px; font-size: 1.25rem; }
 .comparison.match h3 { color: var(--green); }
 .comparison.mismatch h3 { color: var(--red); }

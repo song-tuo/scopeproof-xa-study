@@ -62,7 +62,11 @@ const stimuli = {
     id: "D08",
     context: "一个数据团队发布了一张图表。它还给出了图表里的数字和电脑画图的方法。",
     artifact: { label: "团队公开的数据图表", asset: "./assets/chart-energy-altered.svg", alt: "四个季度能源使用量柱状图" },
-    claim: "现在，另一台电脑也正在用这些材料画图表。",
+    // uncovered × 现在时。现在时是刻意的时态反例（见 05_PAPER_FRAMEWORK/SCOPEPROOF_V6_REFRAME_ZH.md §1.1），
+    // 用于阻断「问过去的事 ⇒ 不能证明」这一启发式，不得改成过去时。
+    // 原文用「另一台电脑」，该指涉在任务中从未出现，本轮 12/25 被试因此顺着复现不一致判了 contradicts。
+    // 改用 context 中已有的「这个团队」，保留 uncovered 与现在时。
+    claim: "现在，这个团队正在用这些材料画另一张图表。",
     bundle: {
       type: "image", kind: "chart", published: "./assets/chart-energy-altered.svg",
       input: { title: "四个季度能源使用量", labels: ["第一季", "第二季", "第三季", "第四季"], values: [78, 62, 55, 43], accent: "#16856b" },
@@ -234,7 +238,36 @@ function showOnly(selector) {
 
 function currentStimulus() { return stimuli[state.order[state.index]]; }
 
+// 最短曝光门：证据渲染后提交按钮保持 disabled 满 DWELL_GATE_MS，倒计时可见。
+// 阈值依据 2026-08-09 预试 inspect_ms 分布（p10=1774 / p25=2278 / 中位=5137），
+// 位于 p25 与中位之间，不惩罚正常作答。本轮 100 个试次中 20 个 inspect_ms 低于 2 秒。
+// 注意：这是 UI 曝光门，与预注册的「最短停留排除标准」是两回事，阈值分开设定。
+const DWELL_GATE_MS = 3000;
+let dwellTimer = null;
+
+function cancelDwellGate() {
+  if (dwellTimer !== null) { clearInterval(dwellTimer); dwellTimer = null; }
+}
+
+function startDwellGate() {
+  cancelDwellGate();
+  const submit = $("#xa-submit");
+  const tick = (left) => { $("#xa-save-status").textContent = `请先看完上面的检查结果（${left} 秒后可提交）`; };
+  let left = Math.ceil(DWELL_GATE_MS / 1000);
+  submit.disabled = true;
+  tick(left);
+  dwellTimer = setInterval(() => {
+    left -= 1;
+    if (left > 0) { tick(left); return; }
+    cancelDwellGate();
+    $("#xa-save-status").textContent = "";
+    submit.disabled = false;
+  }, 1000);
+}
+
 function setResponseEnabled(enabled) {
+  // 换题时必须停表，否则上一题的定时器会在本题尚未看证据时解锁提交按钮。
+  if (!enabled) cancelDwellGate();
   $("#xa-judgment-fieldset").disabled = !enabled;
   $("#xa-confidence-fieldset").disabled = !enabled;
   $("#xa-strength-fieldset").disabled = !enabled;
@@ -381,6 +414,7 @@ function renderEvidence(payload) {
     $("#xa-comparison-texts").classList.remove("hidden"); $("#xa-replay-text").textContent = payload.comparison.replay; $("#xa-published-text").textContent = payload.comparison.published;
   }
   $("#xa-report").classList.remove("hidden"); state.evidenceAt = performance.now(); setResponseEnabled(true);
+  startDwellGate(); // 必须在 setResponseEnabled(true) 之后，它会把 submit 重新置为 disabled
 }
 
 async function loadEvidence() {
