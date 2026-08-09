@@ -20,6 +20,8 @@
 
 预览链接不会写入数据库：
 
+- 从用户编号首页开始的完整 X 预览：`?form=X&preview=1&full=1`
+- 从用户编号首页开始的完整 A 预览：`?form=A&preview=1&full=1`
 - X：`?form=X&preview=1`
 - A：`?form=A&preview=1`
 - 跳过介绍：再加 `&skip_intro=1`
@@ -93,6 +95,7 @@ where xa_probe_sessions.status = 'complete'
 - 每个会话有浏览器随机生成的 256-bit 令牌；数据库只保存令牌哈希。
 - 写入函数同时验证会话编号、令牌、分配刺激和完成顺序。
 - 预览模式完全本地运行，不污染正式数据。
+- 完整预览中的用户编号只用于走通页面，不会保存。
 
 ## 招募前检查
 

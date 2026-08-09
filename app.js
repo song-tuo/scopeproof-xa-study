@@ -14,6 +14,8 @@ const requestedStimulus = ["P01", "S02", "C05", "D08"].includes(params.get("stim
   : null;
 const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
+// 研究者自测用：保留编号首页，但整条流程仍是 preview，不写数据库。
+const fullPreview = preview && params.get("full") === "1";
 // 材料版本。任何改变被试所见内容的修订都必须同时提升 MATERIALS_VERSION、storageKey
 // 和 CONSENT_VERSION，否则新旧数据在库里无法区分，且旧会话可能恢复后接触新材料。
 // v6：把「这次检查／证明／证据」等研究者术语统一改为日常中文，
@@ -461,6 +463,11 @@ $("#xa-platform-form").addEventListener("submit", async (event) => {
     return;
   }
   state.platformUserId = value;
+  if (fullPreview) {
+    $("#xa-platform-status").textContent = "";
+    showOnly("#xa-intro");
+    return;
+  }
   $("#xa-platform-status").textContent = "正在核对，请稍候……";
   const resumed = await continueStoredSession(value);
   if (!resumed) {
@@ -516,7 +523,7 @@ async function resumeOrPreview() {
   if (skipIntro) { await establishSession(); renderTrial(); return; }
   if (preview) {
     state.platformUserId = "PREV01";
-    showOnly("#xa-intro");
+    showOnly(fullPreview ? "#xa-platform-entry" : "#xa-intro");
     return;
   }
   if (!preview && parseStoredSession()) {

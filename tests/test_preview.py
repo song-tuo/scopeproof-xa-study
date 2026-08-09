@@ -21,6 +21,19 @@ def verify_platform_entry(page):
     page.locator("#xa-intro").wait_for(state="visible")
 
 
+def verify_full_preview_starts_at_platform_entry(page):
+    page.goto(f"{BASE}?form=X&preview=1&full=1")
+    page.wait_for_load_state("networkidle")
+    assert page.locator("#xa-platform-entry").is_visible()
+    assert page.locator("#xa-intro").is_hidden()
+    page.locator("#xa-platform-user-id").fill("LOCAL-PREVIEW-ID")
+    page.locator("#xa-platform-form").locator('button[type="submit"]').click()
+    page.locator("#xa-intro").wait_for(state="visible")
+    page.locator("#xa-consent").check()
+    page.locator("#xa-start").click()
+    page.locator("#xa-study").wait_for(state="visible")
+
+
 def verify_scope_preview_gate(page):
     # 正式地址即使被追加 scope=1，也不得把未记录的 C 处理投给被试。
     page.goto(f"{BASE}?scope=1")
@@ -175,6 +188,8 @@ with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
     entry_page = browser.new_page()
     verify_platform_entry(entry_page)
+    full_preview_page = browser.new_page()
+    verify_full_preview_starts_at_platform_entry(full_preview_page)
     scope_page = browser.new_page()
     verify_scope_preview_gate(scope_page)
     verify_cross_version_resume_is_rejected(browser)
