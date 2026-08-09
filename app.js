@@ -16,8 +16,9 @@ const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
 // 材料版本。任何改变被试所见内容的修订都必须同时提升 MATERIALS_VERSION、storageKey
 // 和 CONSENT_VERSION，否则新旧数据在库里无法区分，且旧会话可能恢复后接触新材料。
-// v4：R1 判断题选项改为纯证据关系表述；R2 D08 指涉由「另一台电脑」改为「这个团队」。
-const MATERIALS_VERSION = "v4";
+// v5：D08 改为同一张公开图表上的当前网站运行主张；页面采用 Acme 白底编辑风。
+// 这两项都会改变被试所见材料，因此不得与 v4 会话合并。
+const MATERIALS_VERSION = "v5";
 const CONSENT_VERSION = `scopeproof-xa-zh-${MATERIALS_VERSION}-huixiang`;
 const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
 
@@ -74,17 +75,18 @@ const stimuli = {
   },
   D08: {
     id: "D08",
-    context: "一个数据团队发布了一张图表。它还给出了图表里的数字和电脑画图的方法。",
-    artifact: { label: "团队公开的数据图表", asset: "./assets/chart-energy-altered.svg", alt: "四个季度能源使用量柱状图" },
+    context: "一个数据团队的网站上有一张图表。团队还公开了图表里的数字和电脑画图的方法。",
+    artifact: { label: "网站上的数据图表", asset: "./assets/chart-energy-altered.svg", alt: "四个季度能源使用量柱状图" },
     // uncovered × 现在时。现在时是刻意的时态反例（见 05_PAPER_FRAMEWORK/SCOPEPROOF_V6_REFRAME_ZH.md §1.1），
     // 用于阻断「问过去的事 ⇒ 不能证明」这一启发式，不得改成过去时。
-    // 原文用「另一台电脑」，该指涉在任务中从未出现，本轮 12/25 被试因此顺着复现不一致判了 contradicts。
-    // 改用 context 中已有的「这个团队」，保留 uncovered 与现在时。
-    claim: "现在，这个团队正在用这些材料画另一张图表。",
+    // v4 的「这个团队正在……画另一张图表」与刚才比较的公开图表不是同一对象，造成对象断裂。
+    // v5 改为网站当前如何生成同一张公开图表。本次离线重做只检查材料能生成什么，
+    // 没有观察网站当前的运行过程，因此 gold 仍为 cannot_determine；mismatch 格位保持不变。
+    claim: "现在，这个网站正在用这些数字和方法，画出页面上的这张图表。",
     bundle: {
       type: "image", kind: "chart", published: "./assets/chart-energy-altered.svg",
       input: { title: "四个季度能源使用量", labels: ["第一季", "第二季", "第三季", "第四季"], values: [78, 62, 55, 43], accent: "#16856b" },
-      source: "发布者给出的数字和画图方法",
+      source: "团队公开的数字和画图方法",
       generateLabel: "照着材料再画一张图表", generateDetail: "电脑照着这些材料画了一张新图表。",
       compareLabel: "比较两张图表", same: "两张图表完全一样", different: "两张图表不一样"
     }

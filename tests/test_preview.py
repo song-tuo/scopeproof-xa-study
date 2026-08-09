@@ -59,7 +59,7 @@ def verify_cross_version_resume_is_rejected(browser):
                           session_id: "00000000-0000-0000-0000-000000000001",
                           platform_user_id: "OLD-VERSION-ID",
                           evidence_form: "X",
-                          consent_version: "scopeproof-xa-zh-v3-huixiang",
+                          consent_version: "scopeproof-xa-zh-v4-huixiang",
                           stimulus_order: ["P01", "S02", "C05", "D08"],
                           current_position: 2,
                           poststudy_complete: false,
@@ -75,7 +75,7 @@ def verify_cross_version_resume_is_rejected(browser):
     )
     page.add_init_script(
         """
-        localStorage.setItem("scopeproof_xa_cloud_session_v4", JSON.stringify({
+        localStorage.setItem("scopeproof_xa_cloud_session_v5", JSON.stringify({
           session_id: "00000000-0000-0000-0000-000000000001",
           token: "old-version-token",
           platform_user_id: "OLD-VERSION-ID"
@@ -88,7 +88,7 @@ def verify_cross_version_resume_is_rejected(browser):
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-platform-status").filter(has_text="不属于当前版本").wait_for()
     assert page.evaluate("window.__scopeproofRpcCalls") == ["get_xa_session"]
-    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v4")') is None
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v5")') is None
     assert page.locator("#xa-platform-entry").is_visible()
     page.close()
 

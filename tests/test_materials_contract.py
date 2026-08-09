@@ -8,6 +8,7 @@ MIGRATION = (
     ROOT / "supabase" / "migrations" / "20260809200000_materials_version_isolation.sql"
 ).read_text(encoding="utf-8")
 SCHEMA = (ROOT / "supabase" / "schema.sql").read_text(encoding="utf-8")
+STYLES = (ROOT / "styles.css").read_text(encoding="utf-8")
 SPEC = (
     ROOT.parent
     / "06_DATA_AUDIT"
@@ -17,6 +18,28 @@ SPEC = (
 
 
 class MaterialsVersionContractTests(unittest.TestCase):
+    def test_current_materials_version_and_d08_are_frozen_together(self):
+        self.assertIn('const MATERIALS_VERSION = "v5";', APP)
+        self.assertIn(
+            'context: "一个数据团队的网站上有一张图表。团队还公开了图表里的数字和电脑画图的方法。"',
+            APP,
+        )
+        self.assertIn(
+            'claim: "现在，这个网站正在用这些数字和方法，画出页面上的这张图表。"',
+            APP,
+        )
+        self.assertNotIn(
+            'claim: "现在，这个团队正在用这些材料画另一张图表。"',
+            APP,
+        )
+
+    def test_acme_visual_contract_keeps_the_page_white(self):
+        self.assertIn("--paper: #ffffff;", STYLES)
+        self.assertIn("--terracotta:", STYLES)
+        self.assertIn("--font-serif:", STYLES)
+        self.assertIn("border: 1.5px solid", STYLES)
+        self.assertNotIn("linear-gradient", STYLES)
+
     def test_scope_content_is_preview_only(self):
         self.assertIn(
             'const scopeContentEnabled = preview && params.get("scope") === "1";',
