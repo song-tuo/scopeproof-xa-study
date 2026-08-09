@@ -272,6 +272,12 @@ function applySession(payload, token) {
   // 跨材料版本恢复防护。storageKey 已含版本号，旧版会话在本地取不到；这里再挡一次
   // 服务端返回的旧版会话，避免同一被试前两题看旧材料、后两题看新材料。
   // 这里必须要求字段存在并完全相等；若服务端漏返回版本，不能把“未知版本”当作当前版本放行。
+  // 但“字段缺失”通常表示数据库迁移尚未完成，不能因此删除仍然有效的本地恢复密钥。
+  if (!payload.consent_version) {
+    const error = new Error("数据服务正在更新，请稍后刷新页面重试。你的答题进度仍会保留。");
+    error.code = "SERVER_VERSION_MISSING";
+    throw error;
+  }
   if (payload.consent_version !== CONSENT_VERSION) {
     localStorage.removeItem(storageKey);
     const error = new Error("这份答题记录不属于当前版本，无法继续。请联系研究人员。");
@@ -350,6 +356,10 @@ async function continueStoredSession(platformUserId) {
     }
     return true;
   } catch (error) {
+    if (error.code === "SERVER_VERSION_MISSING") {
+      $("#xa-platform-status").textContent = error.message;
+      return true;
+    }
     localStorage.removeItem(storageKey);
     if (error.code === "MATERIALS_VERSION_MISMATCH") {
       $("#xa-platform-status").textContent = error.message;

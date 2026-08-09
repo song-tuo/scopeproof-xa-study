@@ -93,6 +93,51 @@ def verify_cross_version_resume_is_rejected(browser):
     page.close()
 
 
+def verify_missing_server_version_preserves_resume(browser):
+    page = browser.new_page()
+    page.route(
+        "https://cdn.jsdelivr.net/**",
+        lambda route: route.fulfill(
+            content_type="application/javascript",
+            body="""
+                export function createClient() {
+                  return {
+                    rpc: async () => ({
+                      data: {
+                        session_id: "00000000-0000-0000-0000-000000000002",
+                        platform_user_id: "PENDING-MIGRATION-ID",
+                        evidence_form: "X",
+                        stimulus_order: ["P01", "S02", "C05", "D08"],
+                        current_position: 1,
+                        poststudy_complete: false,
+                        status: "active"
+                      },
+                      error: null
+                    })
+                  };
+                }
+            """,
+        ),
+    )
+    page.add_init_script(
+        """
+        localStorage.setItem("scopeproof_xa_cloud_session_v5", JSON.stringify({
+          session_id: "00000000-0000-0000-0000-000000000002",
+          token: "pending-migration-token",
+          platform_user_id: "PENDING-MIGRATION-ID"
+        }));
+        """
+    )
+    page.goto(BASE)
+    page.wait_for_load_state("networkidle")
+    page.locator("#xa-platform-user-id").fill("PENDING-MIGRATION-ID")
+    page.locator("#xa-platform-form").locator('button[type="submit"]').click()
+    page.locator("#xa-platform-status").filter(has_text="数据服务正在更新").wait_for()
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v5")') is not None
+    assert page.locator("#xa-platform-entry").is_visible()
+    page.close()
+
+
 def complete_form(page, form):
     page.goto(f"{BASE}?form={form}&preview=1&skip_intro=1")
     page.wait_for_load_state("networkidle")
@@ -134,6 +179,7 @@ with sync_playwright() as playwright:
     scope_page = browser.new_page()
     verify_scope_preview_gate(scope_page)
     verify_cross_version_resume_is_rejected(browser)
+    verify_missing_server_version_preserves_resume(browser)
     page_x = browser.new_page()
     x_results, x_signatures = complete_form(page_x, "X")
     page_a = browser.new_page()
