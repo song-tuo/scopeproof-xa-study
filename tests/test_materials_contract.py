@@ -4,6 +4,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 APP = (ROOT / "app.js").read_text(encoding="utf-8")
+HTML = (ROOT / "index.html").read_text(encoding="utf-8")
 MIGRATION = (
     ROOT / "supabase" / "migrations" / "20260809200000_materials_version_isolation.sql"
 ).read_text(encoding="utf-8")
@@ -18,6 +19,12 @@ SPEC = (
 
 
 class MaterialsVersionContractTests(unittest.TestCase):
+    def test_initial_entry_is_hidden_until_route_is_resolved(self):
+        self.assertIn(
+            'id="xa-platform-entry" class="intro-shell platform-entry-simple hidden"',
+            HTML,
+        )
+
     def test_current_materials_version_and_d08_are_frozen_together(self):
         self.assertIn('const MATERIALS_VERSION = "v5";', APP)
         self.assertIn(
