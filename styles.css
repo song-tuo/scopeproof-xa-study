@@ -41,6 +41,15 @@ body {
 }
 
 .intro-shell { width: min(760px, calc(100% - 32px)); }
+.local-file-notice { display: none; }
+.local-file-notice.is-visible { display: block; }
+.local-file-notice .card { margin-top: 40px; }
+.local-file-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
 .intro-hero {
   padding: 30px 6px 18px;
   border-top: 1.5px solid var(--line-strong);

@@ -25,6 +25,11 @@ class MaterialsVersionContractTests(unittest.TestCase):
             HTML,
         )
 
+    def test_file_protocol_has_a_visible_recovery_link(self):
+        self.assertIn('id="xa-local-file-notice"', HTML)
+        self.assertIn('window.location.protocol === "file:"', HTML)
+        self.assertIn('href="http://127.0.0.1:4177/"', HTML)
+
     def test_current_materials_version_and_d08_are_frozen_together(self):
         self.assertIn('const MATERIALS_VERSION = "v5";', APP)
         self.assertIn(

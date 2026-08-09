@@ -9,6 +9,15 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
+  <section id="xa-local-file-notice" class="intro-shell local-file-notice" aria-live="polite">
+    <div class="card">
+      <p class="eyebrow">打开方式不正确</p>
+      <h1>请通过本地网址打开</h1>
+      <p>这个实验页面不能直接双击 HTML 文件运行。请先保持本地服务开启，再点击下面的按钮。</p>
+      <a class="primary-button local-file-link" href="http://127.0.0.1:4177/">打开实验页面</a>
+    </div>
+  </section>
+
   <!-- 初始先隐藏所有页面，等 app.js 根据正式/预览网址决定唯一入口。
        否则预览网址加载时会先闪出编号页，再切到说明页或题目页，看起来像自动跳页。 -->
   <main id="xa-platform-entry" class="intro-shell platform-entry-simple hidden">
@@ -212,6 +221,12 @@
   </main>
 
   <script src="./config.js"></script>
+  <script>
+    // file:// 会阻止模块脚本正常运行；至少显示清楚的恢复入口，不能留给用户一张空白页。
+    if (window.location.protocol === "file:") {
+      document.getElementById("xa-local-file-notice")?.classList.add("is-visible");
+    }
+  </script>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
