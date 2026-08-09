@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <title>检查结果理解小测试</title>
+  <title>电脑结果理解小测试</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./styles.css">
 </head>
@@ -13,7 +13,7 @@
     <div class="card">
       <p class="eyebrow">打开方式不正确</p>
       <h1>请通过本地网址打开</h1>
-      <p>这个实验页面不能直接双击 HTML 文件运行。请先保持本地服务开启，再点击下面的按钮。</p>
+      <p>这个实验页面不能直接双击网页文件运行。请先保持本地服务开启，再点击下面的按钮。</p>
       <a class="primary-button local-file-link" href="http://127.0.0.1:4177/">打开实验页面</a>
     </div>
   </section>
@@ -22,7 +22,7 @@
        否则预览网址加载时会先闪出编号页，再切到说明页或题目页，看起来像自动跳页。 -->
   <main id="xa-platform-entry" class="intro-shell platform-entry-simple hidden">
     <form id="xa-platform-form" class="platform-form-simple">
-      <label class="text-label" for="xa-platform-user-id">1. 请填写已复制的回响数据用户ID，ID将仅用于审核数据匹配身份和发放报酬</label>
+      <label class="text-label" for="xa-platform-user-id">1. 请粘贴回响数据提供的用户编号。我们只用它核对答卷和发放报酬。</label>
       <input id="xa-platform-user-id" class="platform-id-input" name="platform_user_id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required>
       <p id="xa-platform-status" class="xa-status" role="status"></p>
       <button class="secondary-button" type="submit">下一步</button>
@@ -36,8 +36,8 @@
       <p>每道题都按下面三步完成，不需要专业知识。</p>
       <ol class="simple-steps">
         <li><strong>先看</strong><span>看一件作品和一句话。</span></li>
-        <li><strong>再检查</strong><span>点按钮，看电脑检查的结果。</span></li>
-        <li><strong>最后选择</strong><span>判断这次检查能不能证明那句话。</span></li>
+        <li><strong>再看结果</strong><span>点按钮，看电脑重新做一份，再和公开作品比较。</span></li>
+        <li><strong>最后选择</strong><span>只根据电脑给出的结果，判断那句话是真是假。</span></li>
       </ol>
     </section>
     <section class="card consent-card">
@@ -79,7 +79,7 @@
     <section class="card evidence-card">
       <div class="section-title-row">
         <div>
-          <p class="section-label">第二步：看电脑检查</p>
+          <p class="section-label">第二步：看电脑结果</p>
           <h2 id="xa-evidence-heading"></h2>
         </div>
         <span id="xa-mode-chip" class="mode-chip"></span>
@@ -88,17 +88,17 @@
       <button id="xa-evidence-button" class="primary-button" type="button"></button>
       <div id="xa-waiting" class="waiting hidden" role="status">
         <span class="spinner" aria-hidden="true"></span>
-        <span>正在检查，请稍候……</span>
+        <span>电脑正在重新制作并比较，请稍候……</span>
       </div>
       <section id="xa-report" class="xa-report hidden" aria-live="polite">
         <div class="xa-report-meta">
-          <div><span>谁做的</span><strong id="xa-verifier"></strong></div>
-          <div><span>什么时候做的</span><strong id="xa-generated-at"></strong></div>
+          <div><span>结果来自</span><strong id="xa-verifier"></strong></div>
+          <div><span>完成时间</span><strong id="xa-generated-at"></strong></div>
           <div class="hidden"><span>结果编号</span><strong id="xa-report-id"></strong></div>
         </div>
         <ol id="xa-transcript" class="transcript"></ol>
         <section id="xa-comparison" class="comparison">
-          <p class="section-label">最后结果</p>
+          <p class="section-label">比较结果</p>
           <h3 id="xa-comparison-heading"></h3>
           <div id="xa-comparison-images" class="comparison-grid hidden">
             <figure><img id="xa-replay-image" src="" alt="电脑重新制作的结果"><figcaption>电脑重新做的</figcaption></figure>
@@ -109,19 +109,19 @@
             <div><span>电脑重新做的</span><p id="xa-replay-text"></p></div>
             <div><span>发布者给的</span><p id="xa-published-text"></p></div>
           </div>
-          <details id="xa-details"><summary>想看更多</summary><p id="xa-technical-detail"></p></details>
+          <details id="xa-details"><summary>查看详细说明</summary><p id="xa-technical-detail"></p></details>
         </section>
         <!-- scope content（C 条件处理，非中性界面修补）。默认由 app.js 移除，
              仅在条件分配为 C 时保留。保留时 X 与 A 共用同一节点与同一段文字。 -->
         <section class="scope-note" data-treatment="scope-content">
-          <p class="scope-note-label scope-note-can">这次检查能说明什么</p>
+          <p class="scope-note-label scope-note-can">根据这个结果，可以确定</p>
           <ul>
             <li>用这些公开材料重做一次，能不能得到和公开作品一样的成品。</li>
           </ul>
-          <p class="scope-note-label scope-note-cannot">这次检查不能说明什么</p>
+          <p class="scope-note-label scope-note-cannot">根据这个结果，还不能确定</p>
           <ul>
             <li>发布者当初实际是怎么做出这件作品的。</li>
-            <li>这次检查没有看到原始的制作过程。</li>
+            <li>电脑没有看到发布者最初制作作品的过程。</li>
           </ul>
         </section>
       </section>
@@ -130,10 +130,10 @@
     <form id="xa-response-form" class="card response-card">
       <p class="section-label">第三步：选择答案</p>
       <fieldset id="xa-judgment-fieldset" disabled>
-        <legend>这次检查能证明上面那句话吗？</legend>
-        <label><input type="radio" name="judgment" value="supports" required> 这次检查证明了这句话是真的。</label>
-        <label><input type="radio" name="judgment" value="contradicts"> 这次检查证明了这句话是错的。</label>
-        <label><input type="radio" name="judgment" value="cannot_determine"> 这次检查不能证明这句话的真假。</label>
+        <legend>只看刚才电脑给出的结果，下面哪种说法最合适？</legend>
+        <label><input type="radio" name="judgment" value="supports" required> 可以确定那句话是真的。</label>
+        <label><input type="radio" name="judgment" value="contradicts"> 可以确定那句话是假的。</label>
+        <label><input type="radio" name="judgment" value="cannot_determine"> 还不能确定那句话是真是假。</label>
       </fieldset>
       <fieldset id="xa-confidence-fieldset" disabled>
         <legend>你有多确定自己选对了？</legend>
@@ -146,9 +146,9 @@
         </div>
       </fieldset>
       <fieldset id="xa-strength-fieldset" disabled>
-        <legend>这次检查对判断真假有多大用处？</legend>
-        <div class="xa-scale" role="radiogroup" aria-label="用处大小，一到七">
-          <span>没什么用</span>
+        <legend>刚才电脑给出的结果，对你判断那句话有多大帮助？</legend>
+        <div class="xa-scale" role="radiogroup" aria-label="帮助大小，一到七">
+          <span>完全没有帮助</span>
           <label><input type="radio" name="evidence_strength" value="1" required>1</label>
           <label><input type="radio" name="evidence_strength" value="2">2</label>
           <label><input type="radio" name="evidence_strength" value="3">3</label>
@@ -156,7 +156,7 @@
           <label><input type="radio" name="evidence_strength" value="5">5</label>
           <label><input type="radio" name="evidence_strength" value="6">6</label>
           <label><input type="radio" name="evidence_strength" value="7">7</label>
-          <span>很有用</span>
+          <span>帮助很大</span>
         </div>
       </fieldset>
       <div class="form-footer">
@@ -169,17 +169,17 @@
   <main id="xa-poststudy" class="intro-shell hidden">
     <section class="intro-hero">
       <p class="eyebrow">最后几个问题</p>
-      <h1>请回想刚才的电脑检查</h1>
+      <h1>请回想刚才看到的电脑结果</h1>
       <p>按你记得的内容回答即可。答错也不会影响报酬。</p>
     </section>
     <form id="xa-poststudy-form" class="card response-card">
-      <fieldset><legend>是谁做的检查？</legend>
-        <label><input type="radio" name="source_identity" value="independent_verifier" required> 页面上的电脑检查工具</label>
+      <fieldset><legend>这份结果是谁给出的？</legend>
+        <label><input type="radio" name="source_identity" value="independent_verifier" required> 页面里的电脑工具</label>
         <label><input type="radio" name="source_identity" value="publisher"> 发布作品的工作室、公司或平台</label>
-        <label><input type="radio" name="source_identity" value="browser"> 只由我现在使用的手机或电脑自行判断</label>
+        <label><input type="radio" name="source_identity" value="browser"> 我自己看完作品后作出的判断</label>
         <label><input type="radio" name="source_identity" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>检查是什么时候做的？</legend>
+      <fieldset><legend>这份结果是什么时候做出来的？</legend>
         <label><input type="radio" name="evidence_timing" value="during_session" required> 我点击按钮以后，当场做的</label>
         <label><input type="radio" name="evidence_timing" value="before_session"> 我打开页面以前，已经做好了</label>
         <label><input type="radio" name="evidence_timing" value="mixed"> 有些是当场做的，有些是提前做好的</label>
@@ -191,18 +191,18 @@
         <label><input type="radio" name="operations_recall" value="visual_only"> 只由人眼看看两份作品是否相似</label>
         <label><input type="radio" name="operations_recall" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>电脑有没有看到发布者最初怎样制作作品？</legend>
+      <fieldset><legend>电脑有没有看到发布者最初制作作品的过程？</legend>
         <label><input type="radio" name="original_production_observed" value="yes" required> 是</label>
         <label><input type="radio" name="original_production_observed" value="no"> 否</label>
         <label><input type="radio" name="original_production_observed" value="unsure"> 不确定</label>
       </fieldset>
-      <fieldset><legend>你有多确定，自己知道是谁做的检查？</legend>
+      <fieldset><legend>你有多确定自己知道这份结果是谁给出的？</legend>
         <div class="xa-scale" role="radiogroup" aria-label="确定程度，一到七"><span>完全不确定</span>
           <label><input type="radio" name="source_confidence" value="1" required>1</label><label><input type="radio" name="source_confidence" value="2">2</label><label><input type="radio" name="source_confidence" value="3">3</label><label><input type="radio" name="source_confidence" value="4">4</label><label><input type="radio" name="source_confidence" value="5">5</label><label><input type="radio" name="source_confidence" value="6">6</label><label><input type="radio" name="source_confidence" value="7">7</label>
           <span>完全确定</span>
         </div>
       </fieldset>
-      <label class="text-label" for="xa-explanation">请用自己的话说：刚才的电脑检查能说明什么？不能说明什么？</label>
+      <label class="text-label" for="xa-explanation">请用自己的话说：看完电脑给出的结果后，哪些事情可以确定？哪些事情还不能确定？</label>
       <textarea id="xa-explanation" name="explanation" rows="4" maxlength="1200" required></textarea>
       <div class="form-footer"><p id="xa-poststudy-status" class="xa-status" role="status"></p><button id="xa-poststudy-submit" class="secondary-button" type="submit">提交回答</button></div>
     </form>

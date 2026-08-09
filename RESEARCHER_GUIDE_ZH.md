@@ -28,8 +28,8 @@
 
 ## 材料版本与部署
 
-当前材料版本为 `v5`，数据库中的 `consent_version` 为 `scopeproof-xa-zh-v5-huixiang`。
-v5 同时冻结了新的 D08 情境/主张与 Acme 白底编辑风视觉，不得与 v4 样本合并。
+当前材料版本为 `v6`，数据库中的 `consent_version` 为 `scopeproof-xa-zh-v6-huixiang`。
+v6 将被试界面中的研究者术语改为日常中文；题干和选项均有变化，不得与 v5 或更早样本合并。
 
 - 前端与 `supabase/migrations/20260809200000_materials_version_isolation.sql` 必须同批部署；不能只更新网页。
 - 恢复会话时，服务器必须返回同一 `consent_version`，否则网页拒绝继续。
@@ -63,11 +63,11 @@ order by created_at desc;
 4. `xa_probe_poststudy`
 5. `xa_probe_events`
 
-以 `session_id` 连接。v5 分析只保留以下会话，不得与旧材料版本合并：
+以 `session_id` 连接。v6 分析只保留以下会话，不得与旧材料版本合并：
 
 ```sql
 where xa_probe_sessions.status = 'complete'
-  and xa_probe_sessions.consent_version = 'scopeproof-xa-zh-v5-huixiang'
+  and xa_probe_sessions.consent_version = 'scopeproof-xa-zh-v6-huixiang'
 ```
 
 `xa_probe_sessions.platform_user_id` 用于匹配回响身份，`completion_code` 是返回给作答者的 6 位完成码。
@@ -76,7 +76,7 @@ where xa_probe_sessions.status = 'complete'
 
 问卷推送名称：
 
-`检查结果理解小测试（约 5–7 分钟）`
+`电脑结果理解小测试（约 5–7 分钟）`
 
 作答者填写前提示说明：
 
@@ -99,6 +99,6 @@ where xa_probe_sessions.status = 'complete'
 - 用 X 与 A 预览链接逐项检查文字和布局。
 - 确认正式地址即使追加 `?scope=1` 也不会显示边界说明；只有预览地址追加该参数才显示。
 - 用无参数正式链接完整填一遍，确认出现完成代码。
-- 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v5-huixiang`，且 X/A 平衡不受旧版记录影响。
+- 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v6-huixiang`，且 X/A 平衡不受旧版记录影响。
 - 在 `xa_probe_researcher_status` 与五张表中确认测试记录完整。
 - 删除测试记录时只按明确的测试 `session_id` 操作，不要清空整库。

@@ -53,4 +53,4 @@ with sync_playwright() as playwright:
     )
 
     browser.close()
-    print("Acme white-paper style and D08 v5 desktop/mobile: PASS")
+    print("Acme white-paper style and D08 v6 desktop/mobile: PASS")

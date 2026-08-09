@@ -16,9 +16,10 @@ const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
 // 材料版本。任何改变被试所见内容的修订都必须同时提升 MATERIALS_VERSION、storageKey
 // 和 CONSENT_VERSION，否则新旧数据在库里无法区分，且旧会话可能恢复后接触新材料。
-// v5：D08 改为同一张公开图表上的当前网站运行主张；页面采用 Acme 白底编辑风。
-// 这两项都会改变被试所见材料，因此不得与 v4 会话合并。
-const MATERIALS_VERSION = "v5";
+// v6：把「这次检查／证明／证据」等研究者术语统一改为日常中文，
+// 用「电脑给出的结果／重新做一份／比较／可以确定」表达同一任务。
+// 被试所见题干与选项已经变化，因此不得与 v5 会话合并。
+const MATERIALS_VERSION = "v6";
 const CONSENT_VERSION = `scopeproof-xa-zh-${MATERIALS_VERSION}-huixiang`;
 const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
 
@@ -30,7 +31,7 @@ const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
 // 正式 2×2 必须由服务端随条件分配下发，并把条件写入 xa_probe_sessions；
 // 在那之前，本开关只是预览工具，不得用于任何正式作答链接。
 const scopeContentEnabled = preview && params.get("scope") === "1";
-const verifierName = "本页的电脑检查工具";
+const verifierName = "页面里的电脑工具";
 const $ = (selector) => document.querySelector(selector);
 
 const stimuli = {
@@ -160,7 +161,7 @@ function renderOutput(bundle) {
   if (bundle.kind === "chart") return renderChart(bundle.input);
   if (bundle.kind === "summary") return `${bundle.input.finding}${bundle.input.effect}，${bundle.input.recommendation}。`;
   if (bundle.kind === "caption") return `${bundle.input.time}，${bundle.input.subject}正在${bundle.input.action}，地点是${bundle.input.setting}。`;
-  throw new Error("暂时无法完成这项检查");
+  throw new Error("暂时无法生成比较结果");
 }
 
 async function sha256(bytes) {
@@ -380,6 +381,7 @@ function renderArtifact(stimulus) {
 
 function resetEvidence() {
   $("#xa-report").classList.add("hidden");
+  delete $("#xa-report").dataset.evidenceSignature;
   $("#xa-transcript").replaceChildren();
   $("#xa-comparison").classList.remove("match", "mismatch");
   $("#xa-comparison-images").classList.add("hidden");
@@ -395,12 +397,12 @@ function renderTrial() {
   $("#xa-progress").textContent = `第 ${state.index + 1} 题，共 ${state.order.length} 题`;
   $("#xa-context").textContent = stimulus.context; renderArtifact(stimulus); $("#xa-claim").textContent = stimulus.claim; resetEvidence();
   const live = state.evidenceForm === "X";
-  $("#xa-evidence-heading").textContent = live ? "点一下，让电脑现在检查" : "点一下，看电脑以前做好的检查";
-  $("#xa-mode-chip").textContent = live ? "现在做" : "以前做好";
+  $("#xa-evidence-heading").textContent = live ? "让电脑现在重新做一份，再比较" : "查看电脑以前做好的比较结果";
+  $("#xa-mode-chip").textContent = live ? "现在做" : "提前做好";
   $("#xa-source-note").textContent = live
-    ? "你点击后，电脑会马上照着上面的材料再做一份，然后和发布者给的作品比较。"
-    : "电脑早已做完同样的检查。你点击后，只会看到保存的结果，不会再做一遍。";
-  $("#xa-evidence-button").textContent = live ? "让电脑现在检查" : "看以前的检查结果";
+    ? "点击后，电脑会照着上面的材料重新做一份，再和公开的作品比较。"
+    : "电脑以前已经照着同样的材料重新做过一份，并和公开的作品比较。点击后，你会看到当时保存的结果。";
+  $("#xa-evidence-button").textContent = live ? "现在重新做一份并比较" : "查看以前保存的结果";
   $("#xa-evidence-button").disabled = false;
   $("#xa-response-form").reset(); $("#xa-save-status").textContent = "";
   $("#xa-submit").textContent = state.index === state.order.length - 1 ? "去答最后几个问题" : "下一题";
@@ -417,6 +419,8 @@ function renderTranscript(steps) {
 }
 
 function renderEvidence(payload) {
+  // 仅供自动化验证 X/A 产生相同结果；不在界面中显示。
+  $("#xa-report").dataset.evidenceSignature = payload.evidence_signature;
   $("#xa-verifier").textContent = payload.verifier_name;
   $("#xa-generated-at").textContent = state.evidenceForm === "X" ? "刚刚" : "你打开本页以前";
   $("#xa-report-id").textContent = payload.report_id;

@@ -59,7 +59,7 @@ def verify_cross_version_resume_is_rejected(browser):
                           session_id: "00000000-0000-0000-0000-000000000001",
                           platform_user_id: "OLD-VERSION-ID",
                           evidence_form: "X",
-                          consent_version: "scopeproof-xa-zh-v4-huixiang",
+                          consent_version: "scopeproof-xa-zh-v5-huixiang",
                           stimulus_order: ["P01", "S02", "C05", "D08"],
                           current_position: 2,
                           poststudy_complete: false,
@@ -75,7 +75,7 @@ def verify_cross_version_resume_is_rejected(browser):
     )
     page.add_init_script(
         """
-        localStorage.setItem("scopeproof_xa_cloud_session_v5", JSON.stringify({
+        localStorage.setItem("scopeproof_xa_cloud_session_v6", JSON.stringify({
           session_id: "00000000-0000-0000-0000-000000000001",
           token: "old-version-token",
           platform_user_id: "OLD-VERSION-ID"
@@ -88,7 +88,7 @@ def verify_cross_version_resume_is_rejected(browser):
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-platform-status").filter(has_text="不属于当前版本").wait_for()
     assert page.evaluate("window.__scopeproofRpcCalls") == ["get_xa_session"]
-    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v5")') is None
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v6")') is None
     assert page.locator("#xa-platform-entry").is_visible()
     page.close()
 
@@ -121,7 +121,7 @@ def verify_missing_server_version_preserves_resume(browser):
     )
     page.add_init_script(
         """
-        localStorage.setItem("scopeproof_xa_cloud_session_v5", JSON.stringify({
+        localStorage.setItem("scopeproof_xa_cloud_session_v6", JSON.stringify({
           session_id: "00000000-0000-0000-0000-000000000002",
           token: "pending-migration-token",
           platform_user_id: "PENDING-MIGRATION-ID"
@@ -133,7 +133,7 @@ def verify_missing_server_version_preserves_resume(browser):
     page.locator("#xa-platform-user-id").fill("PENDING-MIGRATION-ID")
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-platform-status").filter(has_text="数据服务正在更新").wait_for()
-    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v5")') is not None
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v6")') is not None
     assert page.locator("#xa-platform-entry").is_visible()
     page.close()
 
@@ -147,8 +147,7 @@ def complete_form(page, form):
         page.locator("#xa-evidence-button").click()
         page.locator("#xa-report").wait_for(state="visible")
         results.append(page.locator("#xa-comparison-heading").inner_text())
-        detail = page.locator("#xa-technical-detail").text_content()
-        signatures.append(detail.rsplit("证据签名 ", 1)[1])
+        signatures.append(page.locator("#xa-report").get_attribute("data-evidence-signature"))
         page.locator('input[name="judgment"][value="cannot_determine"]').check()
         page.locator('input[name="confidence"][value="70"]').check()
         page.locator('input[name="evidence_strength"][value="4"]').check()
@@ -162,7 +161,7 @@ def complete_form(page, form):
     page.locator('input[name="operations_recall"][value="read_generate_compare"]').check()
     page.locator('input[name="original_production_observed"][value="no"]').check()
     page.locator('input[name="source_confidence"][value="6"]').check()
-    page.locator("#xa-explanation").fill("能够证明公开材料可按所示步骤重放；不能证明最初制作历史或其他电脑当前状态。")
+    page.locator("#xa-explanation").fill("可以确定公开材料能不能做出同样的作品；还不能确定发布者最初是怎么制作的。")
     page.locator("#xa-poststudy-submit").click()
     page.locator("#xa-completion").wait_for(state="visible")
     completion_code = page.locator("#xa-completion-code").inner_text()
