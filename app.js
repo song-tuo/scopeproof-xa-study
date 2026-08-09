@@ -14,7 +14,17 @@ const requestedStimulus = ["P01", "S02", "C05", "D08"].includes(params.get("stim
   : null;
 const preview = params.get("preview") === "1" || requestedForm !== null;
 const skipIntro = preview && params.get("skip_intro") === "1";
-const storageKey = "scopeproof_xa_cloud_session_v1";
+// 材料版本。任何改变被试所见内容的修订都必须同时提升 MATERIALS_VERSION、storageKey
+// 和 CONSENT_VERSION，否则新旧数据在库里无法区分，且旧会话可能恢复后接触新材料。
+// v4：R1 判断题选项改为纯证据关系表述；R2 D08 指涉由「另一台电脑」改为「这个团队」。
+const MATERIALS_VERSION = "v4";
+const CONSENT_VERSION = `scopeproof-xa-zh-${MATERIALS_VERSION}-huixiang`;
+const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
+
+// scope content（R3 边界声明）是 2×2 中 C 条件的处理本身，不是中性界面修补：
+// 它几乎直接回答 C05 这类 L1 historical origin 主张。默认关闭，使 X/A 重跑保留
+// 无 scope content 的基线；正式 2×2 中由条件分配打开，届时应改为服务端分配而非 URL 参数。
+const scopeContentEnabled = params.get("scope") === "1";
 const verifierName = "本页的电脑检查工具";
 const $ = (selector) => document.querySelector(selector);
 
@@ -238,36 +248,7 @@ function showOnly(selector) {
 
 function currentStimulus() { return stimuli[state.order[state.index]]; }
 
-// 最短曝光门：证据渲染后提交按钮保持 disabled 满 DWELL_GATE_MS，倒计时可见。
-// 阈值依据 2026-08-09 预试 inspect_ms 分布（p10=1774 / p25=2278 / 中位=5137），
-// 位于 p25 与中位之间，不惩罚正常作答。本轮 100 个试次中 20 个 inspect_ms 低于 2 秒。
-// 注意：这是 UI 曝光门，与预注册的「最短停留排除标准」是两回事，阈值分开设定。
-const DWELL_GATE_MS = 3000;
-let dwellTimer = null;
-
-function cancelDwellGate() {
-  if (dwellTimer !== null) { clearInterval(dwellTimer); dwellTimer = null; }
-}
-
-function startDwellGate() {
-  cancelDwellGate();
-  const submit = $("#xa-submit");
-  const tick = (left) => { $("#xa-save-status").textContent = `请先看完上面的检查结果（${left} 秒后可提交）`; };
-  let left = Math.ceil(DWELL_GATE_MS / 1000);
-  submit.disabled = true;
-  tick(left);
-  dwellTimer = setInterval(() => {
-    left -= 1;
-    if (left > 0) { tick(left); return; }
-    cancelDwellGate();
-    $("#xa-save-status").textContent = "";
-    submit.disabled = false;
-  }, 1000);
-}
-
 function setResponseEnabled(enabled) {
-  // 换题时必须停表，否则上一题的定时器会在本题尚未看证据时解锁提交按钮。
-  if (!enabled) cancelDwellGate();
   $("#xa-judgment-fieldset").disabled = !enabled;
   $("#xa-confidence-fieldset").disabled = !enabled;
   $("#xa-strength-fieldset").disabled = !enabled;
@@ -282,6 +263,12 @@ function parseStoredSession() {
 }
 
 function applySession(payload, token) {
+  // 跨材料版本恢复防护。storageKey 已含版本号，旧版会话在本地取不到；这里再挡一次
+  // 服务端返回的旧版会话，避免同一被试前两题看旧材料、后两题看新材料。
+  if (payload.consent_version && payload.consent_version !== CONSENT_VERSION) {
+    localStorage.removeItem(storageKey);
+    throw new Error("这份答题记录属于旧版本的题目，无法继续。请重新开始一次。");
+  }
   state.sessionId = payload.session_id;
   state.token = token;
   state.evidenceForm = payload.evidence_form;
@@ -308,7 +295,7 @@ async function establishSession({ resume = false } = {}) {
   const payload = await rpc("create_xa_session", {
     p_token: token,
     p_platform_user_id: state.platformUserId,
-    p_consent_version: "scopeproof-xa-zh-v3-huixiang",
+    p_consent_version: CONSENT_VERSION,
     p_user_agent: navigator.userAgent.slice(0, 400)
   });
   applySession(payload, token);
@@ -414,7 +401,6 @@ function renderEvidence(payload) {
     $("#xa-comparison-texts").classList.remove("hidden"); $("#xa-replay-text").textContent = payload.comparison.replay; $("#xa-published-text").textContent = payload.comparison.published;
   }
   $("#xa-report").classList.remove("hidden"); state.evidenceAt = performance.now(); setResponseEnabled(true);
-  startDwellGate(); // 必须在 setResponseEnabled(true) 之后，它会把 submit 重新置为 disabled
 }
 
 async function loadEvidence() {
@@ -429,6 +415,9 @@ async function loadEvidence() {
     $("#xa-waiting").classList.add("hidden"); $("#xa-save-status").textContent = error.message; $("#xa-evidence-button").disabled = false;
   }
 }
+
+// scope content 默认不投放：整节从 DOM 移除，而非隐藏，避免经由 CSS 或辅助技术泄漏。
+if (!scopeContentEnabled) document.querySelector('[data-treatment="scope-content"]')?.remove();
 
 $("#xa-consent").addEventListener("change", (event) => { $("#xa-start").disabled = !event.target.checked; });
 $("#xa-platform-form").addEventListener("submit", async (event) => {

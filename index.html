@@ -100,8 +100,9 @@
           </div>
           <details id="xa-details"><summary>想看更多</summary><p id="xa-technical-detail"></p></details>
         </section>
-        <!-- 边界声明：X 与 A 共用同一节点与同一段文字，不得只给其中一组。 -->
-        <section class="scope-note">
+        <!-- scope content（C 条件处理，非中性界面修补）。默认由 app.js 移除，
+             仅在条件分配为 C 时保留。保留时 X 与 A 共用同一节点与同一段文字。 -->
+        <section class="scope-note" data-treatment="scope-content">
           <p class="scope-note-label scope-note-can">这次检查能说明什么</p>
           <ul>
             <li>用这些公开材料重做一次，能不能得到和公开作品一样的成品。</li>
