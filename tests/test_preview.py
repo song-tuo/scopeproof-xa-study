@@ -1,7 +1,9 @@
+import os
+
 from playwright.sync_api import sync_playwright
 
 
-BASE = "http://127.0.0.1:4177/"
+BASE = os.environ.get("SCOPEPROOF_TEST_BASE", "http://127.0.0.1:4177/")
 CALLBACK_URL = (
     "https://www.huixiangdata.com/transferPage?url="
     "https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411"
@@ -17,6 +19,78 @@ def verify_platform_entry(page):
     platform_id.fill("HXUSER202608081234")
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-intro").wait_for(state="visible")
+
+
+def verify_scope_preview_gate(page):
+    # 正式地址即使被追加 scope=1，也不得把未记录的 C 处理投给被试。
+    page.goto(f"{BASE}?scope=1")
+    page.wait_for_load_state("networkidle")
+    assert page.locator('[data-treatment="scope-content"]').count() == 0
+
+    # 普通预览默认仍是无 scope content 的 X/A 基线。
+    page.goto(f"{BASE}?preview=1&skip_intro=1")
+    page.wait_for_load_state("networkidle")
+    assert page.locator('[data-treatment="scope-content"]').count() == 0
+
+    # 只有显式预览才可查看 C 内容；X/A 必须共用逐字相同的节点。
+    texts = []
+    for form in ("X", "A"):
+        page.goto(f"{BASE}?form={form}&preview=1&skip_intro=1&scope=1")
+        page.wait_for_load_state("networkidle")
+        note = page.locator('[data-treatment="scope-content"]')
+        assert note.count() == 1
+        texts.append(note.inner_text())
+    assert texts[0] == texts[1]
+
+
+def verify_cross_version_resume_is_rejected(browser):
+    page = browser.new_page()
+    page.route(
+        "https://cdn.jsdelivr.net/**",
+        lambda route: route.fulfill(
+            content_type="application/javascript",
+            body="""
+                export function createClient() {
+                  return {
+                    rpc: async (name) => {
+                      window.__scopeproofRpcCalls = [...(window.__scopeproofRpcCalls || []), name];
+                      return {
+                        data: {
+                          session_id: "00000000-0000-0000-0000-000000000001",
+                          platform_user_id: "OLD-VERSION-ID",
+                          evidence_form: "X",
+                          consent_version: "scopeproof-xa-zh-v3-huixiang",
+                          stimulus_order: ["P01", "S02", "C05", "D08"],
+                          current_position: 2,
+                          poststudy_complete: false,
+                          status: "active"
+                        },
+                        error: null
+                      };
+                    }
+                  };
+                }
+            """,
+        ),
+    )
+    page.add_init_script(
+        """
+        localStorage.setItem("scopeproof_xa_cloud_session_v4", JSON.stringify({
+          session_id: "00000000-0000-0000-0000-000000000001",
+          token: "old-version-token",
+          platform_user_id: "OLD-VERSION-ID"
+        }));
+        """
+    )
+    page.goto(BASE)
+    page.wait_for_load_state("networkidle")
+    page.locator("#xa-platform-user-id").fill("OLD-VERSION-ID")
+    page.locator("#xa-platform-form").locator('button[type="submit"]').click()
+    page.locator("#xa-platform-status").filter(has_text="不属于当前版本").wait_for()
+    assert page.evaluate("window.__scopeproofRpcCalls") == ["get_xa_session"]
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v4")') is None
+    assert page.locator("#xa-platform-entry").is_visible()
+    page.close()
 
 
 def complete_form(page, form):
@@ -57,6 +131,9 @@ with sync_playwright() as playwright:
     browser = playwright.chromium.launch(headless=True)
     entry_page = browser.new_page()
     verify_platform_entry(entry_page)
+    scope_page = browser.new_page()
+    verify_scope_preview_gate(scope_page)
+    verify_cross_version_resume_is_rejected(browser)
     page_x = browser.new_page()
     x_results, x_signatures = complete_form(page_x, "X")
     page_a = browser.new_page()
@@ -70,4 +147,4 @@ with sync_playwright() as playwright:
         "两张图表不一样",
     ]
     browser.close()
-    print("X/A preview flows and logical evidence signatures: PASS")
+    print("X/A flows, scope gate, version rejection, and evidence signatures: PASS")

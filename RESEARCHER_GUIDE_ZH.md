@@ -24,6 +24,17 @@
 - A：`?form=A&preview=1`
 - 跳过介绍：再加 `&skip_intro=1`
 - 指定先显示某刺激：再加 `&stimulus=P01`（也可用 S02、C05、D08）
+- 查看尚未裁决的边界说明处理：再加 `&scope=1`。它只在预览模式生效，禁止放进正式招募链接。
+
+## 材料版本与部署
+
+当前材料版本为 `v4`，数据库中的 `consent_version` 为 `scopeproof-xa-zh-v4-huixiang`。
+
+- 前端与 `supabase/migrations/20260809200000_materials_version_isolation.sql` 必须同批部署；不能只更新网页。
+- 恢复会话时，服务器必须返回同一 `consent_version`，否则网页拒绝继续。
+- X/A 人数平衡只在同一 `consent_version` 内计算，旧版记录不会影响新版分配。
+- 以后任何改变被试所见材料的修订，都必须提升 `MATERIALS_VERSION` 并新增对应数据库迁移。
+- 正式 2×2 若投放边界说明，必须由服务器分组并把条件写入会话记录，不能使用网址参数分组。
 
 ## 查看招募进度
 
@@ -36,7 +47,7 @@ select * from public.xa_probe_researcher_status order by evidence_form;
 完整会话列表：
 
 ```sql
-select session_id, evidence_form, status, created_at, completed_at
+select session_id, consent_version, evidence_form, status, created_at, completed_at
 from public.xa_probe_sessions
 order by created_at desc;
 ```
@@ -51,7 +62,12 @@ order by created_at desc;
 4. `xa_probe_poststudy`
 5. `xa_probe_events`
 
-以 `session_id` 连接。正式分析只保留 `xa_probe_sessions.status = 'complete'` 的会话。
+以 `session_id` 连接。v4 正式分析只保留以下会话，不得与旧材料版本合并：
+
+```sql
+where xa_probe_sessions.status = 'complete'
+  and xa_probe_sessions.consent_version = 'scopeproof-xa-zh-v4-huixiang'
+```
 
 `xa_probe_sessions.platform_user_id` 用于匹配回响身份，`completion_code` 是返回给作答者的 6 位完成码。
 
@@ -80,6 +96,8 @@ order by created_at desc;
 ## 招募前检查
 
 - 用 X 与 A 预览链接逐项检查文字和布局。
+- 确认正式地址即使追加 `?scope=1` 也不会显示边界说明；只有预览地址追加该参数才显示。
 - 用无参数正式链接完整填一遍，确认出现完成代码。
+- 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v4-huixiang`，且 X/A 平衡不受旧版记录影响。
 - 在 `xa_probe_researcher_status` 与五张表中确认测试记录完整。
 - 删除测试记录时只按明确的测试 `session_id` 操作，不要清空整库。

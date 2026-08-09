@@ -22,9 +22,13 @@ const CONSENT_VERSION = `scopeproof-xa-zh-${MATERIALS_VERSION}-huixiang`;
 const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
 
 // scope content（R3 边界声明）是 2×2 中 C 条件的处理本身，不是中性界面修补：
-// 它几乎直接回答 C05 这类 L1 historical origin 主张。默认关闭，使 X/A 重跑保留
-// 无 scope content 的基线；正式 2×2 中由条件分配打开，届时应改为服务端分配而非 URL 参数。
-const scopeContentEnabled = params.get("scope") === "1";
+// 它几乎直接回答 C05 这类 L1 historical origin 主张。
+//
+// 必须同时满足 preview 才生效。只看 ?scope=1 是不安全的：生产地址加一个参数就能把 C 处理
+// 投给正式被试，而库里没有任何字段记录该被试看过 scope content，事后无法区分。
+// 正式 2×2 必须由服务端随条件分配下发，并把条件写入 xa_probe_sessions；
+// 在那之前，本开关只是预览工具，不得用于任何正式作答链接。
+const scopeContentEnabled = preview && params.get("scope") === "1";
 const verifierName = "本页的电脑检查工具";
 const $ = (selector) => document.querySelector(selector);
 
@@ -265,9 +269,12 @@ function parseStoredSession() {
 function applySession(payload, token) {
   // 跨材料版本恢复防护。storageKey 已含版本号，旧版会话在本地取不到；这里再挡一次
   // 服务端返回的旧版会话，避免同一被试前两题看旧材料、后两题看新材料。
-  if (payload.consent_version && payload.consent_version !== CONSENT_VERSION) {
+  // 这里必须要求字段存在并完全相等；若服务端漏返回版本，不能把“未知版本”当作当前版本放行。
+  if (payload.consent_version !== CONSENT_VERSION) {
     localStorage.removeItem(storageKey);
-    throw new Error("这份答题记录属于旧版本的题目，无法继续。请重新开始一次。");
+    const error = new Error("这份答题记录不属于当前版本，无法继续。请联系研究人员。");
+    error.code = "MATERIALS_VERSION_MISMATCH";
+    throw error;
   }
   state.sessionId = payload.session_id;
   state.token = token;
@@ -281,7 +288,13 @@ async function establishSession({ resume = false } = {}) {
   if (preview) {
     const order = ["P01", "S02", "C05", "D08"];
     state.platformUserId = "PREV01";
-    applySession({ session_id: `preview-${randomToken(8)}`, evidence_form: requestedForm || "X", stimulus_order: order, current_position: 0 }, "preview");
+    applySession({
+      session_id: `preview-${randomToken(8)}`,
+      evidence_form: requestedForm || "X",
+      consent_version: CONSENT_VERSION,
+      stimulus_order: order,
+      current_position: 0
+    }, "preview");
     return { poststudy_complete: false };
   }
   if (resume) {
@@ -334,8 +347,12 @@ async function continueStoredSession(platformUserId) {
       showOnly("#xa-completion");
     }
     return true;
-  } catch {
+  } catch (error) {
     localStorage.removeItem(storageKey);
+    if (error.code === "MATERIALS_VERSION_MISMATCH") {
+      $("#xa-platform-status").textContent = error.message;
+      return true;
+    }
     return false;
   }
 }

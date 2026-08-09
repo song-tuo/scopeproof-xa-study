@@ -97,23 +97,27 @@ declare
   v_a integer;
   v_offset integer := floor(random() * 4)::integer;
   v_ids text[] := array['P01', 'S02', 'C05', 'D08'];
+  v_consent text;
   i integer;
 begin
   if p_token !~ '^[0-9a-f]{64}$' then raise exception 'invalid session token'; end if;
   if char_length(btrim(p_platform_user_id)) < 1 or p_platform_user_id ~ '[[:space:]]'
     then raise exception 'invalid platform user id'; end if;
   if char_length(p_consent_version) not between 1 and 80 then raise exception 'invalid consent version'; end if;
+  v_consent := left(p_consent_version, 80);
 
-  perform pg_advisory_xact_lock(hashtext('scopeproof-xa-form-balance'));
+  perform pg_advisory_xact_lock(hashtext('scopeproof-xa-form-balance-' || v_consent));
   select count(*) filter (where evidence_form = 'X'), count(*) filter (where evidence_form = 'A')
-    into v_x, v_a from public.xa_probe_sessions;
+    into v_x, v_a
+    from public.xa_probe_sessions
+   where consent_version = v_consent;
   if v_x < v_a then v_form := 'X';
   elsif v_a < v_x then v_form := 'A';
   else v_form := case when random() < 0.5 then 'X' else 'A' end;
   end if;
 
   insert into public.xa_probe_sessions(session_id, token_hash, platform_user_id, evidence_form, consent_version, user_agent)
-  values (v_session_id, extensions.digest(p_token, 'sha256'), p_platform_user_id, v_form, left(p_consent_version, 80), left(coalesce(p_user_agent, ''), 400));
+  values (v_session_id, extensions.digest(p_token, 'sha256'), p_platform_user_id, v_form, v_consent, left(coalesce(p_user_agent, ''), 400));
 
   for i in 0..3 loop
     insert into public.xa_probe_assignments(session_id, position, stimulus_id)
@@ -123,6 +127,7 @@ begin
   return jsonb_build_object(
     'session_id', v_session_id,
     'evidence_form', v_form,
+    'consent_version', v_consent,
     'stimulus_order', to_jsonb(array(
       select stimulus_id from public.xa_probe_assignments where session_id = v_session_id order by position
     )),
@@ -160,6 +165,7 @@ begin
     'session_id', v_session.session_id,
     'platform_user_id', v_session.platform_user_id,
     'evidence_form', v_session.evidence_form,
+    'consent_version', v_session.consent_version,
     'stimulus_order', to_jsonb(array(
       select stimulus_id from public.xa_probe_assignments where session_id = p_session_id order by position
     )),
