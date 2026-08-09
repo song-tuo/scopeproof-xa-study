@@ -387,6 +387,11 @@ textarea {
 .platform-id-input:focus { outline: 3px solid rgba(25, 92, 66, 0.15); border-color: var(--green); }
 .field-help { margin: 9px 0 24px; color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
 .platform-card .form-footer { align-items: flex-end; }
+.platform-entry-simple { padding-top: 64px; }
+.platform-form-simple { display: grid; gap: 16px; }
+.platform-form-simple .text-label { font-size: 1rem; font-weight: 500; line-height: 1.65; }
+.platform-form-simple .xa-status:empty { display: none; }
+.platform-form-simple .secondary-button { justify-self: end; min-width: 112px; }
 .completion-copy { margin-top: 16px; }
 .completion-status { margin: 10px 0 0; color: var(--green); }
 .completion-return {
@@ -472,6 +477,8 @@ select {
   .confidence-options { grid-template-columns: 1fr; }
   .primary-button, .secondary-button { width: 100%; min-height: 54px; }
   .platform-id-input { font-size: 1rem; letter-spacing: 0.03em; }
+  .platform-entry-simple { padding-top: 32px; }
+  .platform-form-simple .secondary-button { justify-self: stretch; }
   .completion-card { margin-top: 24px; }
   .select-grid { grid-template-columns: 1fr; }
   .form-footer { align-items: stretch; flex-direction: column; }

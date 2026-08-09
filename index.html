@@ -9,20 +9,12 @@
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <main id="xa-platform-entry" class="intro-shell">
-    <section class="intro-hero">
-      <p class="eyebrow">回响数据 · 核对身份</p>
-      <h1>开始前，请填写用户编号</h1>
-      <p>请把回响数据平台提供的用户编号完整复制到下面。编号长度不固定，只用于核对答卷和发放报酬。</p>
-    </section>
-    <form id="xa-platform-form" class="card platform-card">
-      <label class="text-label" for="xa-platform-user-id">回响数据用户编号</label>
-      <input id="xa-platform-user-id" class="platform-id-input" name="platform_user_id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="请完整粘贴用户编号" required>
-      <p class="field-help">编号不限位数。请勿填写姓名、手机号或其他信息。</p>
-      <div class="form-footer">
-        <p id="xa-platform-status" class="xa-status" role="status"></p>
-        <button class="secondary-button" type="submit">继续阅读参与说明</button>
-      </div>
+  <main id="xa-platform-entry" class="intro-shell platform-entry-simple">
+    <form id="xa-platform-form" class="platform-form-simple">
+      <label class="text-label" for="xa-platform-user-id">1. 请填写已复制的回响数据用户ID，ID将仅用于审核数据匹配身份和发放报酬</label>
+      <input id="xa-platform-user-id" class="platform-id-input" name="platform_user_id" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" required>
+      <p id="xa-platform-status" class="xa-status" role="status"></p>
+      <button class="secondary-button" type="submit">下一步</button>
     </form>
   </main>
 
