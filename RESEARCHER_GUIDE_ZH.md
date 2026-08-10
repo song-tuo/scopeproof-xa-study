@@ -87,7 +87,7 @@ where xa_probe_sessions.status = 'complete'
 
 完成后的返回地址：
 
-`https://www.huixiangdata.com/transferPage?url=https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411`
+`https://www.huixiangdata.com/transferPage?url=https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608101355`
 
 ## 安全设计
 
@@ -102,7 +102,7 @@ where xa_probe_sessions.status = 'complete'
 
 - 用 X 与 A 预览链接逐项检查文字和布局。
 - 确认正式地址即使追加 `?scope=1` 也不会显示边界说明；只有预览地址追加该参数才显示。
-- 用无参数正式链接完整填一遍，确认出现完成代码。
+- 用无参数正式链接完整填一遍，确认保存成功后自动返回回响数据。
 - 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v7-huixiang`，且 X/A 平衡不受旧版记录影响。
 - 在 `xa_probe_researcher_status` 与五张表中确认测试记录完整。
 - 删除测试记录时只按明确的测试 `session_id` 操作，不要清空整库。

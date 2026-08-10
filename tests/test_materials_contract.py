@@ -62,6 +62,8 @@ class MaterialsVersionContractTests(unittest.TestCase):
     def test_completion_uses_callback_without_participant_code(self):
         self.assertNotIn('id="xa-completion-code"', HTML)
         self.assertNotIn('id="xa-copy-completion"', HTML)
+        self.assertIn("202608101355", HTML)
+        self.assertNotIn("202608085411", HTML)
         self.assertIn("window.location.replace(returnUrl)", APP)
         self.assertIn("showCompletion({ autoReturn: !preview })", APP)
 
