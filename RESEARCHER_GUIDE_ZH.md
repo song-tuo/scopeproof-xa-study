@@ -30,8 +30,8 @@
 
 ## 材料版本与部署
 
-当前材料版本为 `v6`，数据库中的 `consent_version` 为 `scopeproof-xa-zh-v6-huixiang`。
-v6 将被试界面中的研究者术语改为日常中文；题干和选项均有变化，不得与 v5 或更早样本合并。
+当前材料版本为 `v7`，数据库中的 `consent_version` 为 `scopeproof-xa-zh-v7-huixiang`。
+v7 在全部回答保存后自动返回回响数据，不再显示或要求填写完成码；不得与更早版本合并。
 
 - 前端与 `supabase/migrations/20260809200000_materials_version_isolation.sql` 必须同批部署；不能只更新网页。
 - 恢复会话时，服务器必须返回同一 `consent_version`，否则网页拒绝继续。
@@ -65,14 +65,15 @@ order by created_at desc;
 4. `xa_probe_poststudy`
 5. `xa_probe_events`
 
-以 `session_id` 连接。v6 分析只保留以下会话，不得与旧材料版本合并：
+以 `session_id` 连接。v7 分析只保留以下会话，不得与旧材料版本合并：
 
 ```sql
 where xa_probe_sessions.status = 'complete'
-  and xa_probe_sessions.consent_version = 'scopeproof-xa-zh-v6-huixiang'
+  and xa_probe_sessions.consent_version = 'scopeproof-xa-zh-v7-huixiang'
 ```
 
-`xa_probe_sessions.platform_user_id` 用于匹配回响身份，`completion_code` 是返回给作答者的 6 位完成码。
+`xa_probe_sessions.platform_user_id` 用于匹配回响身份。数据库仍保留内部完成编号用于审计，
+但不展示给被试，也不需要在回响数据中配置完成码题。
 
 ## 回响数据推送配置
 
@@ -82,7 +83,7 @@ where xa_probe_sessions.status = 'complete'
 
 作答者填写前提示说明：
 
-`本任务将跳转至外部实验页面，全程约五到七分钟，不需要专业知识。进入页面后，请完整粘贴回响数据平台提供的用户编号（编号长度不固定），用于核对答卷和发放报酬。完成全部问题后，页面会显示一个六位数字完成码；请复制或截图保存，并返回回响数据平台提交。请勿重复作答；若中途关闭，请在原来的手机或电脑上重新打开，以继续作答。`
+`本任务将跳转至外部实验页面，全程约五到七分钟，不需要专业知识。进入页面后，请完整粘贴回响数据平台提供的用户编号（编号长度不固定），用于核对答卷和发放报酬。完成全部问题后，页面会自动返回回响数据。请勿重复作答；若中途关闭，请在原来的手机或电脑上重新打开，以继续作答。`
 
 完成后的返回地址：
 
@@ -102,6 +103,6 @@ where xa_probe_sessions.status = 'complete'
 - 用 X 与 A 预览链接逐项检查文字和布局。
 - 确认正式地址即使追加 `?scope=1` 也不会显示边界说明；只有预览地址追加该参数才显示。
 - 用无参数正式链接完整填一遍，确认出现完成代码。
-- 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v6-huixiang`，且 X/A 平衡不受旧版记录影响。
+- 确认新会话的 `consent_version` 为 `scopeproof-xa-zh-v7-huixiang`，且 X/A 平衡不受旧版记录影响。
 - 在 `xa_probe_researcher_status` 与五张表中确认测试记录完整。
 - 删除测试记录时只按明确的测试 `session_id` 操作，不要清空整库。

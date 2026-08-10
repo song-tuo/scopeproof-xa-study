@@ -4,10 +4,6 @@ from playwright.sync_api import sync_playwright
 
 
 BASE = os.environ.get("SCOPEPROOF_TEST_BASE", "http://127.0.0.1:4177/")
-CALLBACK_URL = (
-    "https://www.huixiangdata.com/transferPage?url="
-    "https%3A%2F%2Fwww.huixiangdata.com%2Fquestionnaire%2Fapi%2Fv1%2Fanswer%2Fthird%2Fcallback%2Fsubmit%2F202608085411"
-)
 
 
 def verify_platform_entry(page):
@@ -72,7 +68,7 @@ def verify_cross_version_resume_is_rejected(browser):
                           session_id: "00000000-0000-0000-0000-000000000001",
                           platform_user_id: "OLD-VERSION-ID",
                           evidence_form: "X",
-                          consent_version: "scopeproof-xa-zh-v5-huixiang",
+                          consent_version: "scopeproof-xa-zh-v6-huixiang",
                           stimulus_order: ["P01", "S02", "C05", "D08"],
                           current_position: 2,
                           poststudy_complete: false,
@@ -88,7 +84,7 @@ def verify_cross_version_resume_is_rejected(browser):
     )
     page.add_init_script(
         """
-        localStorage.setItem("scopeproof_xa_cloud_session_v6", JSON.stringify({
+        localStorage.setItem("scopeproof_xa_cloud_session_v7", JSON.stringify({
           session_id: "00000000-0000-0000-0000-000000000001",
           token: "old-version-token",
           platform_user_id: "OLD-VERSION-ID"
@@ -101,7 +97,7 @@ def verify_cross_version_resume_is_rejected(browser):
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-platform-status").filter(has_text="不属于当前版本").wait_for()
     assert page.evaluate("window.__scopeproofRpcCalls") == ["get_xa_session"]
-    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v6")') is None
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v7")') is None
     assert page.locator("#xa-platform-entry").is_visible()
     page.close()
 
@@ -134,7 +130,7 @@ def verify_missing_server_version_preserves_resume(browser):
     )
     page.add_init_script(
         """
-        localStorage.setItem("scopeproof_xa_cloud_session_v6", JSON.stringify({
+        localStorage.setItem("scopeproof_xa_cloud_session_v7", JSON.stringify({
           session_id: "00000000-0000-0000-0000-000000000002",
           token: "pending-migration-token",
           platform_user_id: "PENDING-MIGRATION-ID"
@@ -146,7 +142,7 @@ def verify_missing_server_version_preserves_resume(browser):
     page.locator("#xa-platform-user-id").fill("PENDING-MIGRATION-ID")
     page.locator("#xa-platform-form").locator('button[type="submit"]').click()
     page.locator("#xa-platform-status").filter(has_text="数据服务正在更新").wait_for()
-    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v6")') is not None
+    assert page.evaluate('localStorage.getItem("scopeproof_xa_cloud_session_v7")') is not None
     assert page.locator("#xa-platform-entry").is_visible()
     page.close()
 
@@ -177,10 +173,8 @@ def complete_form(page, form):
     page.locator("#xa-explanation").fill("可以确定公开材料能不能做出同样的作品；还不能确定发布者最初是怎么制作的。")
     page.locator("#xa-poststudy-submit").click()
     page.locator("#xa-completion").wait_for(state="visible")
-    completion_code = page.locator("#xa-completion-code").inner_text()
-    assert completion_code == ("000001" if form == "X" else "000002")
-    assert len(completion_code) == 6
-    assert page.locator("#xa-platform-return").get_attribute("href") == CALLBACK_URL
+    assert page.locator("#xa-completion-title").inner_text() == "预览已经完成"
+    assert page.locator("#xa-platform-return").is_hidden()
     return results, signatures
 
 

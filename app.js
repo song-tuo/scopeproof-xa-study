@@ -18,10 +18,9 @@ const skipIntro = preview && params.get("skip_intro") === "1";
 const fullPreview = preview && params.get("full") === "1";
 // 材料版本。任何改变被试所见内容的修订都必须同时提升 MATERIALS_VERSION、storageKey
 // 和 CONSENT_VERSION，否则新旧数据在库里无法区分，且旧会话可能恢复后接触新材料。
-// v6：把「这次检查／证明／证据」等研究者术语统一改为日常中文，
-// 用「电脑给出的结果／重新做一份／比较／可以确定」表达同一任务。
-// 被试所见题干与选项已经变化，因此不得与 v5 会话合并。
-const MATERIALS_VERSION = "v6";
+// v7：完成后不再要求被试复制完成码；正式模式保存成功后自动返回回响数据。
+// 虽然改动发生在所有研究回答保存之后，仍属于被试可见流程，因此与 v6 分开记录。
+const MATERIALS_VERSION = "v7";
 const CONSENT_VERSION = `scopeproof-xa-zh-${MATERIALS_VERSION}-huixiang`;
 const storageKey = `scopeproof_xa_cloud_session_${MATERIALS_VERSION}`;
 
@@ -255,6 +254,22 @@ function showOnly(selector) {
   window.scrollTo({ top: 0, behavior: "instant" });
 }
 
+function showCompletion({ autoReturn = false } = {}) {
+  $("#xa-platform-return").classList.toggle("hidden", !autoReturn);
+  if (autoReturn) {
+    $("#xa-completion-title").textContent = "回答已经保存";
+    $("#xa-completion-message").textContent = "页面正在返回回响数据，请稍候。";
+  } else {
+    $("#xa-completion-title").textContent = "预览已经完成";
+    $("#xa-completion-message").textContent = "这是预览模式，没有保存数据，也不会跳转到回响数据。";
+  }
+  showOnly("#xa-completion");
+  if (autoReturn) {
+    const returnUrl = $("#xa-platform-return").href;
+    window.setTimeout(() => window.location.replace(returnUrl), 1200);
+  }
+}
+
 function currentStimulus() { return stimuli[state.order[state.index]]; }
 
 function setResponseEnabled(enabled) {
@@ -352,10 +367,9 @@ async function continueStoredSession(platformUserId) {
     if (state.index < state.order.length) renderTrial();
     else if (!payload.poststudy_complete) showOnly("#xa-poststudy");
     else {
-      const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
+      await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
       localStorage.removeItem(storageKey);
-      $("#xa-completion-code").textContent = completed.completion_code;
-      showOnly("#xa-completion");
+      showCompletion({ autoReturn: true });
     }
     return true;
   } catch (error) {
@@ -512,10 +526,10 @@ $("#xa-poststudy-form").addEventListener("submit", async (event) => {
         p_operations_recall: form.get("operations_recall"), p_original_production_observed: form.get("original_production_observed"),
         p_source_confidence: Number(form.get("source_confidence")), p_explanation: form.get("explanation")
       });
-      const completed = await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
-      localStorage.removeItem(storageKey); $("#xa-completion-code").textContent = completed.completion_code;
-    } else $("#xa-completion-code").textContent = state.evidenceForm === "X" ? "000001" : "000002";
-    showOnly("#xa-completion");
+      await rpc("complete_xa_session", { p_session_id: state.sessionId, p_token: state.token });
+      localStorage.removeItem(storageKey);
+    }
+    showCompletion({ autoReturn: !preview });
   } catch (error) { $("#xa-poststudy-status").textContent = error.message; $("#xa-poststudy-submit").disabled = false; }
 });
 
@@ -532,15 +546,5 @@ async function resumeOrPreview() {
   }
   showOnly("#xa-platform-entry");
 }
-
-$("#xa-copy-completion").addEventListener("click", async () => {
-  const code = $("#xa-completion-code").textContent.trim();
-  try {
-    await navigator.clipboard.writeText(code);
-    $("#xa-copy-status").textContent = "完成码已复制。现在请返回回响数据平台提交。";
-  } catch {
-    $("#xa-copy-status").textContent = `无法自动复制，请手动记录：${code}`;
-  }
-});
 
 resumeOrPreview().catch((error) => { $("#xa-intro-status").textContent = `加载失败：${error.message}`; });

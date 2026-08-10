@@ -450,8 +450,6 @@ textarea {
 .platform-form-simple .text-label { font-size: 1rem; font-weight: 500; line-height: 1.65; }
 .platform-form-simple .xa-status:empty { display: none; }
 .platform-form-simple .secondary-button { justify-self: end; min-width: 112px; }
-.completion-copy { margin-top: 16px; }
-.completion-status { margin: 10px 0 0; color: var(--green); }
 .completion-return {
   display: grid;
   place-items: center;
@@ -502,17 +500,6 @@ select {
 #transfer-status { margin: 0; color: var(--red); }
 .completion-card { margin-top: 80px; text-align: center; }
 .completion-card > p { color: var(--muted); line-height: 1.7; }
-.completion-code {
-  display: inline-grid;
-  gap: 5px;
-  margin-top: 18px;
-  padding: 16px 28px;
-  border: 1.5px solid var(--green);
-  border-radius: 4px;
-  background: var(--green-soft);
-}
-.completion-code span { color: var(--muted); font-size: 0.9rem; }
-.completion-code strong { color: var(--green); font: 1.7rem var(--font-mono); letter-spacing: 0.08em; }
 
 @media (max-width: 620px) {
   .shell, .intro-shell { width: min(100% - 20px, 860px); padding: 18px 0 48px; }

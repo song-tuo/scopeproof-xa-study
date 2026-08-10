@@ -31,7 +31,7 @@ class MaterialsVersionContractTests(unittest.TestCase):
         self.assertIn('href="http://127.0.0.1:4177/"', HTML)
 
     def test_current_materials_version_and_d08_are_frozen_together(self):
-        self.assertIn('const MATERIALS_VERSION = "v6";', APP)
+        self.assertIn('const MATERIALS_VERSION = "v7";', APP)
         self.assertIn(
             'context: "一个数据团队的网站上有一张图表。团队还公开了图表里的数字和电脑画图的方法。"',
             APP,
@@ -58,6 +58,12 @@ class MaterialsVersionContractTests(unittest.TestCase):
         self.assertIn("只看刚才电脑给出的结果", HTML)
         self.assertIn("还不能确定那句话是真是假", HTML)
         self.assertNotIn('"让电脑现在检查"', APP)
+
+    def test_completion_uses_callback_without_participant_code(self):
+        self.assertNotIn('id="xa-completion-code"', HTML)
+        self.assertNotIn('id="xa-copy-completion"', HTML)
+        self.assertIn("window.location.replace(returnUrl)", APP)
+        self.assertIn("showCompletion({ autoReturn: !preview })", APP)
 
     def test_scope_content_is_preview_only(self):
         self.assertIn(
